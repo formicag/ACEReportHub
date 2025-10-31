@@ -85,7 +85,7 @@ Closed lost this week: {closed_lost_count}"""
     print("=" * 80)
 
     # Construct the prompt
-    prompt = f"""You are writing a professional intro message for a weekly ACE (AWS Partner Central) hygiene report sent to IT professionals.
+    prompt = f"""You are writing a professional intro message for a weekly ACE (AWS Partner Central) hygiene report sent to employees at Colibri Digital.
 
 {context}
 
@@ -102,13 +102,15 @@ Write a SHORT 2-3 sentence message that:
 10. Use words like "good progress", "improvement", "trending positively/negatively"
 11. Keep it concise and data-focused
 
-IMPORTANT:
-- Do NOT add any greeting like "Hi All" or "Hello team"
-- Do NOT add any closing statements or phrases like "pipeline remains healthy and active"
+CRITICAL RULES - DO NOT VIOLATE:
+- NEVER use "Hi All" or "Hello team" or any greeting
+- NEVER use "your pipeline" or "your" - say "the pipeline" or "our pipeline" or "we have"
+- NEVER add closing statements like "pipeline remains healthy and active"
 - Return ONLY the 2-3 sentence factual commentary about stale data trends
 - Avoid superlatives and overly positive language
 - Keep total length under 150 words
-- Focus on facts and trends, not cheerleading"""
+- Focus on facts and trends, not cheerleading
+- This is an internal company report to Colibri Digital employees, not to external clients"""
 
     try:
         # Initialize Bedrock client with timeout configuration
