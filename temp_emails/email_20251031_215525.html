@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: #000000;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #0078D4;
+            border-bottom: 3px solid #0078D4;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #333;
+            margin-top: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #666;
+            margin-top: 20px;
+        }
+        .summary-section {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .stat-box {
+            background-color: white;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #0078D4;
+            margin: 10px 0;
+        }
+        .stat-prev {
+            font-size: 11px;
+            color: #999;
+        }
+        .changes-section {
+            margin: 30px 0;
+        }
+        table.opportunities-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table.opportunities-table th {
+            background-color: #0078D4;
+            color: white;
+            text-align: left;
+            padding: 12px 8px;
+            font-weight: bold;
+        }
+        table.opportunities-table td {
+            padding: 10px 8px;
+            border: 1px solid #ddd;
+        }
+        table.opportunities-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        table.opportunities-table tr:hover {
+            background-color: #f0f0f0;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        ul li {
+            padding: 5px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        ul li:last-child {
+            border-bottom: none;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            font-size: 10pt;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+<div style="background-color: #e7f3ff; padding: 15px; border-left: 4px solid #0078D4; margin: 20px 0; border-radius: 4px;">
+<p><strong>Hi All,</strong></p>
+<p>Our stale opportunities decreased from 24 to 2 this week, showing good progress in pipeline hygiene. With 58 total open opportunities, including 9 Well-Architected opportunities and 15 RAPID PILOT opportunities, the pipeline remains active. Notable activity this week includes 16 new opportunities and 5 launches.</p>
+</div>
+<div style="background-color: #e7f3ff; padding: 15px; border-left: 4px solid #0078D4; margin: 20px 0; border-radius: 4px;">
+<p><strong>Keep your ACE hygiene tight — it matters.</strong><br>Detailed, accurate, and regularly updated ACE opportunities directly improve our AWS Co-Sell score, making us more visible to AWS sellers. Good data = higher score = more co-sell leads.</p>
+</div>
+<div class="summary-section">
+<h2>📊 Weekly Summary</h2>
+<div class="stats-grid">
+<div class="stat-box"><div class="stat-label">Total Open Opportunities</div><div class="stat-value">58 <span style="color: green">↑ 7</span></div><div class="stat-prev">Last report: 51</div></div>
+<div class="stat-box"><div class="stat-label">Average Days Since Update</div><div class="stat-value">18.3 <span style="color: green">↓ 24.2</span></div><div class="stat-prev">Last report: 42.5</div></div>
+<div class="stat-box"><div class="stat-label">Stale Opportunities (30+ days)</div><div class="stat-value">2 <span style="color: green">↓ 22</span></div><div class="stat-prev">Last report: 24</div></div>
+<div class="stat-box"><div class="stat-label">Est. Monthly ARR (Open Ops)</div><div class="stat-value">$136,536 <span style="color: black">↓ $45,260</span></div><div class="stat-prev">Last report: $181,796</div></div>
+</div>
+</div>
+<div style="background-color: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 20px 0; border-radius: 4px;">
+<p style="margin: 0;"><strong>📝 Reminder:</strong> Please tag <code>#Ambassador:jason.oliver@colibridigital.io</code> in the <strong>Additional Comments</strong> field of ACE for all opportunities.</p>
+</div>
+<div style="background-color: #ffebee; padding: 15px; border-left: 4px solid #d32f2f; margin: 20px 0; border-radius: 4px;">
+<p style="margin: 0;"><strong>🚨 CRITICAL: AWS Account ID Required</strong><br>Before moving any opportunity to <strong>Launched</strong>, you MUST add the <strong>AWS Account ID</strong>. Without this ID, the opportunity will NOT count toward our <strong>LARR (Launched Annual Recurring Revenue)</strong> metrics. This significantly impacts our AWS partnership score and co-sell opportunities. Add the AWS Account ID as soon as possible for all opportunities.</p>
+</div>
+<div style="background-color: #f0f8ff; padding: 15px; border-left: 4px solid #0078D4; margin: 20px 0; border-radius: 4px;">
+<p style="margin: 0;"><strong>📢 Feedback Welcome!</strong><br>Have suggestions to improve this report? Notice any errors or issues? Please let me know! Your feedback helps make this report more useful for everyone.</p>
+</div>
+<div class="insights-section">
+<h2>📊 Key Insights for Open Opportunities</h2>
+<h3>💰 Top 3 Opportunities by Est. Monthly Spend</h3>
+<table class="opportunities-table">
+<thead><tr><th>Rank</th><th>Customer</th><th>Opportunity ID</th><th>Est. Monthly Spend</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Center Parcs</td><td>O8029834</td><td>$40,000</td></tr>
+<tr><td>2</td><td>Recognise Bank Limited</td><td>O9999702</td><td>$27,626</td></tr>
+<tr><td>3</td><td>Rail Delivery Group</td><td>O8212897</td><td>$10,000</td></tr>
+</tbody></table>
+<h3>🚀 RAPID PILOT Opportunities (15)</h3>
+<table class="opportunities-table">
+<thead><tr><th>Customer</th><th>Opportunity ID</th><th>Stage</th></tr></thead>
+<tbody>
+<tr><td>DJB STRATEGIES LTD</td><td>O7537786</td><td>Committed</td></tr>
+<tr><td>Blue Light Card Limited</td><td>O7596164</td><td>Prospect</td></tr>
+<tr><td>Lendscape Limited 2025</td><td>O7580079</td><td>Prospect</td></tr>
+<tr><td>Altia Solutions Ltd</td><td>O7580378</td><td>Prospect</td></tr>
+<tr><td>TURNKEY INSOLVENCY SERVICES LIMITED( Clone )</td><td>O7911024</td><td>Committed</td></tr>
+<tr><td>TURNKEY INSOLVENCY SERVICES LIMITED</td><td>O7537728</td><td>Committed</td></tr>
+<tr><td>Cornwall Insight Limited( Clone )</td><td>O7910909</td><td>Committed</td></tr>
+<tr><td>WALLSTREETDOCS LTD</td><td>O7580123</td><td>Prospect</td></tr>
+<tr><td>DeHavilland Information Services Limited</td><td>O7591919</td><td>Committed</td></tr>
+<tr><td>Tax Systems Ltd</td><td>O7498686</td><td>Committed</td></tr>
+<tr><td>Cornwall Insight Limited</td><td>O7580336</td><td>Qualified</td></tr>
+<tr><td>EQUE2 LIMITED</td><td>O7580197</td><td>Prospect</td></tr>
+<tr><td>https://cubelogic.com</td><td>O7580266</td><td>Prospect</td></tr>
+<tr><td>Mecenat International AB</td><td>O7596501</td><td>Prospect</td></tr>
+<tr><td>Proforest</td><td>O7498590</td><td>Prospect</td></tr>
+</tbody></table>
+<h3>🏗️ Well-Architected Opportunities (9)</h3>
+<table class="opportunities-table">
+<thead><tr><th>Customer</th><th>Opportunity ID</th><th>Stage</th></tr></thead>
+<tbody>
+<tr><td>Rail Delivery Group</td><td>O6626677</td><td>Prospect</td></tr>
+<tr><td>Rail Delivery Group</td><td>O6626721</td><td>Prospect</td></tr>
+<tr><td>Rail Delivery Group</td><td>O8212897</td><td>Prospect</td></tr>
+<tr><td>Rail Delivery Group (TLMS)</td><td>O6627776</td><td>Prospect</td></tr>
+<tr><td>Rail Delivery Group (TLMS)</td><td>O6627816</td><td>Prospect</td></tr>
+<tr><td>Rail Delivery Group (TLMS)</td><td>O6627845</td><td>Prospect</td></tr>
+<tr><td>Rail Delivery Group (TLMS)</td><td>O6627856</td><td>Prospect</td></tr>
+<tr><td>Rail Delivery Group (TLMS)</td><td>O6627875</td><td>Prospect</td></tr>
+<tr><td>Center Parcs</td><td>O2079306</td><td>Prospect</td></tr>
+</tbody></table>
+</div>
+<h1>ACE Hygiene Report - New Format</h1>
+<p>Report generated: 31 October 2025</p>
+<div class="stale-section">
+<h2>⚠️ Stale Opportunities (30+ Days Since Last Update)</h2>
+<p>The following <strong>2 opportunities</strong> need to be updated to maintain our Partner Central score:</p>
+<table class="opportunities-table">
+<thead><tr><th>Opportunity ID</th><th>Days Since Update</th><th>Customer</th><th>Status</th><th>Stage</th><th>Primary Contact</th><th>Last Updated</th><th>Next Step</th></tr></thead>
+<tbody>
+<tr><td>O8086070</td><td style="font-weight: bold; color: #d32f2f;">44</td><td>Capita PLC</td><td>Approved</td><td>Prospect</td><td>Alan Rowden</td><td>17/09/2025</td><td>18/09/2025 @adhanley - Engaged with Alan and team discussing DC migration project.</td></tr>
+<tr><td>O3317899</td><td style="font-weight: bold; color: #d32f2f;">142</td><td>Rial Delivery Group</td><td>Approved</td><td>Prospect</td><td>Steve Meek</td><td>06/11/2025</td><td>RFP is on hold.  No visibility of new timelines.</td></tr>
+</tbody></table>
+</div>
+<div class="changes-section">
+<h2>✨ New Opportunities Created in ACE Since Last Report</h2>
+<p>These <strong>16 new opportunities</strong> were added to ACE since last report.</p>
+<p style="color: #d32f2f;"><em>Please add a primary contact to opportunities without a contact.</em></p>
+<table class="opportunities-table">
+<thead><tr><th>Opportunity ID</th><th>Customer</th><th>Stage</th><th>Date Created</th><th>Primary Contact</th><th>Created By</th><th>Est. Monthly ARR</th></tr></thead>
+<tbody>
+<tr><td>O10644682</td><td>Rail Delivery Group</td><td>Prospect</td><td>31/10/2025</td><td></td><td>Steve Meek</td><td>$500</td></tr>
+<tr><td>O10644665</td><td>Rail Delivery Group</td><td>Prospect</td><td>31/10/2025</td><td></td><td>Steve Meek</td><td>$500</td></tr>
+<tr><td>O10644658</td><td>Rail Delivery Group</td><td>Prospect</td><td>31/10/2025</td><td></td><td>Steve Meek</td><td>$500</td></tr>
+<tr><td>O10644645</td><td>Rail Delivery Group</td><td>Prospect</td><td>31/10/2025</td><td></td><td>Steve Meek</td><td>$500</td></tr>
+<tr><td>O10644625</td><td>Rail Delivery Group</td><td>Prospect</td><td>31/10/2025</td><td></td><td>Steve Meek</td><td>$500</td></tr>
+<tr><td>O10644527</td><td>Rail Delivery Group</td><td>Prospect</td><td>31/10/2025</td><td></td><td>Steve Meek</td><td>$250</td></tr>
+<tr><td>O10644571</td><td>Rail Delivery Group</td><td>Prospect</td><td>31/10/2025</td><td></td><td>Steve Meek</td><td>$250</td></tr>
+<tr><td>O10644396</td><td>Rail Delivery Group</td><td>Prospect</td><td>31/10/2025</td><td></td><td>Steve Meek</td><td>$250</td></tr>
+<tr><td>O10644465</td><td>Rila Delivery Group</td><td>Prospect</td><td>31/10/2025</td><td></td><td>Steve Meek</td><td>$250</td></tr>
+<tr><td>O10644332</td><td>Rail Delivery Group</td><td>Prospect</td><td>31/10/2025</td><td></td><td>Steve Meek</td><td>$250</td></tr>
+<tr><td>O10515780</td><td>Sureserve</td><td>Prospect</td><td>28/10/2025</td><td></td><td>charlie saunders</td><td>$5,000</td></tr>
+<tr><td>O10373238</td><td>Rail Delivery Group</td><td>Prospect</td><td>24/10/2025</td><td>Steve Meek</td><td>Steve Meek</td><td>$1,000</td></tr>
+<tr><td>O10373431</td><td>Rail Delivery Group</td><td>Prospect</td><td>24/10/2025</td><td></td><td>Steve Meek</td><td>$500</td></tr>
+<tr><td>O10373486</td><td>Rail Delivery Group</td><td>Prospect</td><td>24/10/2025</td><td></td><td>Steve Meek</td><td>$500</td></tr>
+<tr><td>O10373344</td><td>Rail Delivery Group</td><td>Prospect</td><td>24/10/2025</td><td>Steve Meek</td><td>Steve Meek</td><td>$500</td></tr>
+<tr><td>O10373394</td><td>Rail Delivery Group</td><td>Prospect</td><td>24/10/2025</td><td></td><td>Steve Meek</td><td>$500</td></tr>
+</tbody></table>
+<h2>🚀 Launched Ops This Week</h2>
+<p>These <strong>5 opportunities</strong> have been moved to launched in ACE.</p>
+<table class="opportunities-table">
+<thead><tr><th>Opportunity ID</th><th>Partner Project Title</th><th>Customer</th><th>Previous Stage</th><th>Created By</th><th>Est. Monthly ARR</th><th>AWS Sales Rep Name</th><th>AWS Account ID</th></tr></thead>
+<tbody>
+<tr><td><strong>O6641705</strong></td><td>Centre Parcs new API - ESL Test</td><td>Centre Parcs</td><td>Prospect</td><td>Adam Stephenson</td><td>$100</td><td>Mariona Paradell naranjo</td><td>811122012318.0</td></tr>
+<tr><td><strong>O2079452</strong></td><td>AWS Managed Services - Mobile App</td><td>Center Parcs</td><td>Prospect</td><td>Alan Rowden</td><td>$2,000</td><td>Jonathan James</td><td>918865323179.0</td></tr>
+<tr><td><strong>O6641689</strong></td><td>Centre Parcs new API - ESL Production</td><td>Centre Parcs</td><td>Prospect</td><td>Adam Stephenson</td><td>$100</td><td>Mariona Paradell naranjo</td><td>708365923092.0</td></tr>
+<tr><td><strong>O6626478</strong></td><td>Cloud Intelligence Dashboard Implementation</td><td>Rail Delivery Group</td><td>Prospect</td><td>Steve Meek</td><td>$250</td><td>Jason Thoday</td><td>145548337705.0</td></tr>
+<tr><td><strong>O6626601</strong></td><td>New Controlled Integration Environment for TMS</td><td>Rail Delivery Group</td><td>Prospect</td><td>Steve Meek</td><td>$2,000</td><td>Jason Thoday</td><td>617148623239.0</td></tr>
+</tbody></table>
+<h2>❌ Closed Lost Ops This Week</h2>
+<p>These <strong>4 opportunities</strong> were marked as Closed Lost. Please ensure the close reason is documented.</p>
+<table class="opportunities-table">
+<thead><tr><th>Opportunity ID</th><th>Customer</th><th>Close Reason</th><th>Est. Monthly ARR</th><th>Last Updated</th></tr></thead>
+<tbody>
+<tr><td><strong>O6641599</strong></td><td>Independent Radio News Limited</td><td>Financial/Commercial</td><td>$100</td><td>23/10/2025</td></tr>
+<tr><td><strong>O6641630</strong></td><td>Independent Radio News Limited</td><td>Financial/Commercial</td><td>$30</td><td>23/10/2025</td></tr>
+<tr><td><strong>O6641590</strong></td><td>Independent Radio News Limited</td><td>Financial/Commercial</td><td>$100</td><td>23/10/2025</td></tr>
+<tr><td><strong>O6641640</strong></td><td>Independent Radio News Limited</td><td>Financial/Commercial</td><td>$30</td><td>23/10/2025</td></tr>
+</tbody></table>
+<h2>🔒 ACE Ops No Longer Open Since Last Report</h2>
+<p>These <strong>9 opportunities</strong> were open in the last report but are no longer in the open pipeline:</p>
+<table class="opportunities-table">
+<thead><tr><th>Opportunity ID</th><th>Customer</th><th>Previous Stage</th><th>Current Stage</th></tr></thead>
+<tbody>
+<tr><td><strong>O6641630</strong></td><td>Independent Radio News Limited</td><td>Prospect</td><td><em>Closed Lost</em></td></tr>
+<tr><td><strong>O2079452</strong></td><td>Center Parcs</td><td>Prospect</td><td><em>Launched</em></td></tr>
+<tr><td><strong>O6641705</strong></td><td>Centre Parcs</td><td>Prospect</td><td><em>Launched</em></td></tr>
+<tr><td><strong>O6641590</strong></td><td>Independent Radio News Limited</td><td>Qualified</td><td><em>Closed Lost</em></td></tr>
+<tr><td><strong>O6641640</strong></td><td>Independent Radio News Limited</td><td>Prospect</td><td><em>Closed Lost</em></td></tr>
+<tr><td><strong>O6626601</strong></td><td>Rail Delivery Group</td><td>Prospect</td><td><em>Launched</em></td></tr>
+<tr><td><strong>O6626478</strong></td><td>Rail Delivery Group</td><td>Prospect</td><td><em>Launched</em></td></tr>
+<tr><td><strong>O6641689</strong></td><td>Centre Parcs</td><td>Prospect</td><td><em>Launched</em></td></tr>
+<tr><td><strong>O6641599</strong></td><td>Independent Radio News Limited</td><td>Prospect</td><td><em>Closed Lost</em></td></tr>
+</tbody></table>
+</div>
+<div class="all-ops-section">
+<h2>📋 All Open Opportunities in ACE</h2>
+<p>Please update these opportunities in Partner Central or let me know if they should be closed.</p>
+<p>Complete list of all <strong>58 current open opportunities</strong> in Partner Central ACE:</p>
+<table class="opportunities-table" style="font-size: 10px;">
+<thead><tr><th>Opportunity ID</th><th>Date Created</th><th>Customer Company Name</th><th>Partner Project Title</th><th>Customer Business Problem</th><th>APN Programs</th><th>Solution Offered</th><th>AWS Products</th><th>Additional Comments</th><th>Stage</th><th>Status</th><th>Est. ARR</th><th>Delivery Model</th><th>Use Case</th><th>Opportunity Type</th><th>AWS Sales Rep Name</th><th>Industry Vertical</th><th>Opportunity Owner Name</th></tr></thead>
+<tbody>
+<tr><td>O10644682</td><td>31/10/2025</td><td>Rail Delivery Group</td><td>New Day Out Guide Environment - DEV</td><td>New Days Out Guide environments required.</td><td></td><td>S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Approved</td><td>$500</td><td>Managed Services;Professional Services</td><td>Containers & Serverless</td><td>Net New Business</td><td>Jason Thoday</td><td>Transportation & Logistics</td><td>Steve Meek</td></tr>
+<tr><td>O10644665</td><td>31/10/2025</td><td>Rail Delivery Group</td><td>New Day Out Guide Environment - TEST</td><td>New Days Out Guide environments required.</td><td></td><td>S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Approved</td><td>$500</td><td>Managed Services;Professional Services</td><td>Containers & Serverless</td><td>Net New Business</td><td>Jason Thoday</td><td>Transportation & Logistics</td><td>Steve Meek</td></tr>
+<tr><td>O10644658</td><td>31/10/2025</td><td>Rail Delivery Group</td><td>New Day Out Guide Environment - HFT</td><td>New Days Out Guide environments required.</td><td></td><td>S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Approved</td><td>$500</td><td>Managed Services;Professional Services</td><td>Containers & Serverless</td><td>Net New Business</td><td>Jason Thoday</td><td>Transportation & Logistics</td><td>Steve Meek</td></tr>
+<tr><td>O10644645</td><td>31/10/2025</td><td>Rail Delivery Group</td><td>New Day Out Guide Environment - PREPROD</td><td>New Days Out Guide environments required.</td><td></td><td>S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Approved</td><td>$500</td><td>Managed Services;Professional Services</td><td>Containers & Serverless</td><td>Net New Business</td><td>Jason Thoday</td><td>Transportation & Logistics</td><td>Steve Meek</td></tr>
+<tr><td>O10644625</td><td>31/10/2025</td><td>Rail Delivery Group</td><td>New Day Out Guide Environment - PROD</td><td>New Days Out Guide environments required.</td><td></td><td>S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Approved</td><td>$500</td><td>Managed Services;Professional Services</td><td>Containers & Serverless</td><td>Net New Business</td><td>Jason Thoday</td><td>Transportation & Logistics</td><td>Steve Meek</td></tr>
+<tr><td>O10644527</td><td>31/10/2025</td><td>Rail Delivery Group</td><td>New Railcard Marheting Database</td><td>In need of a new marketing database to promote railcard adoption.</td><td></td><td>S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Submitted</td><td>$250</td><td>Managed Services;Professional Services</td><td>Database</td><td>Net New Business</td><td>nan</td><td>Transportation & Logistics</td><td>Steve Meek</td></tr>
+<tr><td>O10644571</td><td>31/10/2025</td><td>Rail Delivery Group</td><td>New Railcard Marheting Database - DEV</td><td>In need of a new marketing database to promote railcard adoption.</td><td></td><td>S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Submitted</td><td>$250</td><td>Managed Services;Professional Services</td><td>Database</td><td>Net New Business</td><td>nan</td><td>Transportation & Logistics</td><td>Steve Meek</td></tr>
+<tr><td>O10644396</td><td>31/10/2025</td><td>Rail Delivery Group</td><td>New Railcard Marketing Database - PREPROD</td><td>In need of a new marketing database to promote railcard adoption.</td><td></td><td>S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Submitted</td><td>$250</td><td>Managed Services;Professional Services</td><td>Database</td><td>Net New Business</td><td>nan</td><td>Transportation & Logistics</td><td>Steve Meek</td></tr>
+<tr><td>O10644465</td><td>31/10/2025</td><td>Rila Delivery Group</td><td>New Railcard Marketing Database - NFT</td><td>In need of a new marketing database to promote railcard adoption.</td><td></td><td>S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Submitted</td><td>$250</td><td>Managed Services;Professional Services</td><td>Database</td><td>Net New Business</td><td>nan</td><td>Transportation & Logistics</td><td>Steve Meek</td></tr>
+<tr><td>O10644332</td><td>31/10/2025</td><td>Rail Delivery Group</td><td>New Railcard Marketing Database - PROD</td><td>In need of a new marketing database to promote railcard adoption.</td><td></td><td>S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Submitted</td><td>$250</td><td>Managed Services;Professional Services</td><td>Database</td><td>Net New Business</td><td>nan</td><td>Transportation & Logistics</td><td>Steve Meek</td></tr>
+<tr><td>O10515780</td><td>28/10/2025</td><td>Sureserve</td><td>PPA- Agreement</td><td>The customer has expanded their AWS footprint rapidly but lacks a clear view of how well it aligns w...</td><td></td><td>S-0054566;S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Approved</td><td>$5,000</td><td>Managed Services;Professional Services</td><td>Cloud Management Tools</td><td>Net New Business</td><td>Sayeed Raja</td><td>Energy - Power & Utilities</td><td>charlie saunders</td></tr>
+<tr><td>O8363719</td><td>31/07/2025</td><td>Tax Systems</td><td>Tax Systems - Qbusiness - index test</td><td>AI for internal chat use cases</td><td></td><td>S-0068939</td><td>Amazon Q Business - Q index</td><td></td><td>Qualified</td><td>Approved</td><td>$500</td><td>Other</td><td>AI Machine Learning and Analytics</td><td>Expansion</td><td>Joshua Chappatte</td><td>Other</td><td>Gianluca Formica</td></tr>
+<tr><td>O10373238</td><td>24/10/2025</td><td>Rail Delivery Group</td><td>New Railcard Database Environment - PROD</td><td>As part of an initiative to modernise both the Digital Railcards platform and Plastic Fulfilment cap...</td><td></td><td>S-0034000</td><td>nan</td><td>#Ambassador:jason.oliver@colibridigital.io</td><td>Prospect</td><td>Approved</td><td>$1,000</td><td>Managed Services;Professional Services</td><td>Database</td><td>Net New Business</td><td>Jason Thoday</td><td>Transportation & Logistics</td><td>Steve Meek</td></tr>
+<tr><td>O7537786</td><td>06/09/2025</td><td>DJB STRATEGIES LTD</td><td>Q2 RAPID PILOT</td><td>Creating an auto-healing ingestion pipeline for licensed media and news content, including things li...</td><td></td><td>S-0053879;S-0076188</td><td>Amazon Bedrock;Amazon Bedrock - Agents;Amazon Bedrock - Amazon Models</td><td></td><td>Committed</td><td>Approved</td><td>$10</td><td>Professional Services</td><td>AI Machine Learning and Analytics</td><td>Net New Business</td><td>Raul Mancero</td><td>Professional Services</td><td>Adam Dunn</td></tr>
+<tr><td>O10373431</td><td>24/10/2025</td><td>Rail Delivery Group</td><td>New Railcard Database Environment - TEST</td><td>As part of an initiative to modernise both the Digital Railcards platform and Plastic Fulfilment cap...</td><td></td><td>S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Approved</td><td>$500</td><td>Managed Services;Professional Services</td><td>Database</td><td>Net New Business</td><td>Jason Thoday</td><td>Transportation & Logistics</td><td>Steve Meek</td></tr>
+<tr><td>O10373486</td><td>24/10/2025</td><td>Rail Delivery Group</td><td>New Railcard Database Environment - DEV</td><td>As part of an initiative to modernise both the Digital Railcards platform and Plastic Fulfilment cap...</td><td></td><td>S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Approved</td><td>$500</td><td>Managed Services;Professional Services</td><td>Database</td><td>Net New Business</td><td>Jason Thoday</td><td>Transportation & Logistics</td><td>Steve Meek</td></tr>
+<tr><td>O10373344</td><td>24/10/2025</td><td>Rail Delivery Group</td><td>New Railcard Database Environment Build - PrePROD</td><td>As part of an initiative to modernise both the Digital Railcards platform and Plastic Fulfilment cap...</td><td></td><td>S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Approved</td><td>$500</td><td>Managed Services;Professional Services</td><td>Database</td><td>Net New Business</td><td>Jason Thoday</td><td>Transportation & Logistics</td><td>Steve Meek</td></tr>
+<tr><td>O10373394</td><td>24/10/2025</td><td>Rail Delivery Group</td><td>New Railcard Database Build - NFT</td><td>As part of an initiative to modernise both the Digital Railcards platform and Plastic Fulfilment cap...</td><td></td><td>S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Approved</td><td>$500</td><td>Managed Services;Professional Services</td><td>Database</td><td>Net New Business</td><td>Jason Thoday</td><td>Transportation & Logistics</td><td>Steve Meek</td></tr>
+<tr><td>O7596164</td><td>06/12/2025</td><td>Blue Light Card Limited</td><td>Q2 RAPID PILOT</td><td>Generative AI has the potential to continuously analyse click-stream and redemption data to craft hy...</td><td></td><td>S-0053879</td><td>Amazon Bedrock;Amazon Bedrock - Agents;Amazon Bedrock - Amazon Models;Amazon EC2 - C5n</td><td></td><td>Prospect</td><td>Approved</td><td>$25</td><td>Professional Services</td><td>AI Machine Learning and Analytics</td><td>Net New Business</td><td>Oliver Jeffreys</td><td>Professional Services</td><td>Adam Dunn</td></tr>
+<tr><td>O6626677</td><td>04/10/2025</td><td>Rail Delivery Group</td><td>Strategic Transit Gateway Implementation</td><td>Nasstar implemented the Transit Gateway as part of the Darwin Modernisation project.  RDG now lookin...</td><td>Well-Architected</td><td>S-0053879</td><td>AWS Transit Gateway</td><td></td><td>Prospect</td><td>Approved</td><td>$5,000</td><td>Managed Services;Professional Services</td><td>Enterprise Governance & Controls</td><td>Net New Business</td><td>Jason Thoday</td><td>Government</td><td>Steve Meek</td></tr>
+<tr><td>O6626721</td><td>04/10/2025</td><td>Rail Delivery Group</td><td>TMS/ITSO integration for Digital Ticketing</td><td>Next stage of digitisation of rail ticketing strategy</td><td>Well-Architected</td><td>S-0053879;S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Approved</td><td>$2,500</td><td>Managed Services;Professional Services</td><td>Containers & Serverless</td><td>Net New Business</td><td>Jason Thoday</td><td>Government</td><td>Steve Meek</td></tr>
+<tr><td>O8212897</td><td>22/07/2025</td><td>Rail Delivery Group</td><td>Rail Staff Travel AI & Automation</td><td>Rail Staff Travel provides the discount travel service across RDG and the TOCs.  They have very manu...</td><td>Well-Architected</td><td>S-0012436</td><td>nan</td><td>#Ambassador:jason.oliver@colibridigital.io</td><td>Prospect</td><td>Approved</td><td>$10,000</td><td>Professional Services</td><td>AI Machine Learning and Analytics</td><td>Expansion</td><td>Jason Thoday</td><td>Government</td><td>Steve Meek</td></tr>
+<tr><td>O2352796</td><td>19/09/2023</td><td>Rail Delivery Group</td><td>RDG - NREM - API gateway Integration</td><td>Nasstar have worked with RDG in relation to the National Rail Enquiries Modernisation (NREM) Program...</td><td></td><td>Other</td><td>nan</td><td>#Ambassador:jason.oliver@nasstar.com</td><td>Prospect</td><td>Approved</td><td>$10</td><td>Professional Services</td><td>Cloud Management Tools</td><td>Net New Business</td><td>Jason Thoday</td><td>Government</td><td>Steve Meek</td></tr>
+<tr><td>O6627776</td><td>04/10/2025</td><td>Rail Delivery Group (TLMS)</td><td>TLMS - replace monitoring</td><td>Use of a complex third party monitoring tool is causing issues with supportability. Sufficient funct...</td><td>Well-Architected</td><td>S-0034000</td><td>Amazon CloudWatch</td><td>#Ambassador:jason.oliver@nasstar.com"</td><td>Prospect</td><td>Approved</td><td>$100</td><td>Managed Services;Professional Services</td><td>Monitoring, logging and performance</td><td>Net New Business</td><td>Jason Thoday</td><td>Government</td><td>Adam Stephenson</td></tr>
+<tr><td>O6627816</td><td>04/10/2025</td><td>Rail Delivery Group (TLMS)</td><td>TLMS modernisation - prod</td><td>Use of a complex third party monitoring tool is causing issues with supportability. Sufficient funct...</td><td>Well-Architected</td><td>S-0012436;S-0034000</td><td>Amazon Elastic Container Service (ECS);Amazon Managed Streaming for Apache Kafka (MSK)</td><td>#Ambassador:jason.oliver@nasstar.com"</td><td>Prospect</td><td>Approved</td><td>$5,000</td><td>Managed Services;Professional Services</td><td>Containers & Serverless</td><td>Net New Business</td><td>Jason Thoday</td><td>Government</td><td>Steve Meek</td></tr>
+<tr><td>O6627845</td><td>04/10/2025</td><td>Rail Delivery Group (TLMS)</td><td>TLMS modernisation - pre-prod</td><td>Modernise an EC2 based workload to ECS/MSK</td><td>Well-Architected</td><td>S-0012436;S-0034000</td><td>Amazon Elastic Container Service (ECS);Amazon Managed Streaming for Apache Kafka (MSK)</td><td>#Ambassador:jason.oliver@nasstar.com"</td><td>Prospect</td><td>Approved</td><td>$5,000</td><td>Managed Services;Professional Services</td><td>Containers & Serverless</td><td>Net New Business</td><td>Jason Thoday</td><td>Government</td><td>Steve Meek</td></tr>
+<tr><td>O6627856</td><td>04/10/2025</td><td>Rail Delivery Group (TLMS)</td><td>TLMS modernisation - test</td><td>Modernise an EC2 based workload to ECS/MSK</td><td>Well-Architected</td><td>S-0012436;S-0034000</td><td>Amazon Elastic Container Service (ECS);Amazon Managed Streaming for Apache Kafka (MSK)</td><td>#Ambassador:jason.oliver@nasstar.com"</td><td>Prospect</td><td>Approved</td><td>$5,000</td><td>Managed Services;Professional Services</td><td>Containers & Serverless</td><td>Net New Business</td><td>Jason Thoday</td><td>Government</td><td>Steve Meek</td></tr>
+<tr><td>O6627875</td><td>04/10/2025</td><td>Rail Delivery Group (TLMS)</td><td>TLMS modernisation - ECR</td><td>Modernise an EC2 based workload to ECS/MSK</td><td>Well-Architected</td><td>S-0012436;S-0034000</td><td>Amazon Elastic Container Registry (ECR)</td><td>#Ambassador:jason.oliver@nasstar.com"</td><td>Prospect</td><td>Approved</td><td>$100</td><td>Managed Services;Professional Services</td><td>Containers & Serverless</td><td>Net New Business</td><td>Jason Thoday</td><td>Government</td><td>Steve Meek</td></tr>
+<tr><td>O2079306</td><td>27/06/2023</td><td>Center Parcs</td><td>Date Warehousing - Managed Services</td><td>Center Parcs have asked Nasstar to provide AWS Managed Services for the new Data Warehouse / Analyti...</td><td>Well-Architected</td><td>Other</td><td>nan</td><td>#Ambassador:jason.oliver@nasstar.com</td><td>Prospect</td><td>Approved</td><td>$5,000</td><td>Managed Services;Professional Services</td><td>Big Data: Data Warehouse / Data Integration / ETL / Data Lake / BI</td><td>Net New Business</td><td>Rick Foti</td><td>Travel</td><td>Alan Rowden</td></tr>
+<tr><td>O8029834</td><td>07/10/2025</td><td>Center Parcs</td><td>Center Parcs DC Exit</td><td>For Visibility Only - AWS qualifying on prem migration</td><td></td><td>Other</td><td>Amazon EC2 Windows;Amazon RDS for MySQL</td><td>#Ambassador:jason.oliver@colibridigital.io</td><td>Qualified</td><td>Approved</td><td>$40,000</td><td>Other</td><td>Migration / Database Migration</td><td>Expansion</td><td>Jonathan James</td><td>Hospitality</td><td>Alan Rowden</td></tr>
+<tr><td>O6641562</td><td>04/11/2025</td><td>Independent Radio News Limited</td><td>IRN - EFS or S3 to support SFTP - Prod</td><td>Add EFS or S3 storage solution to support SFTP downloads from ftp site – current solution supports F...</td><td></td><td>S-0034000</td><td>Amazon Elastic File System (EFS);Amazon S3</td><td>#Ambassador:jason.oliver@nasstar.com</td><td>Qualified</td><td>Approved</td><td>$20</td><td>Managed Services;Professional Services</td><td>Storage & Backup</td><td>Net New Business</td><td>Edward Stanley</td><td>Media & Entertainment</td><td>Adam Stephenson</td></tr>
+<tr><td>O6641487</td><td>04/11/2025</td><td>Independent Radio News Limited</td><td>IRN - EFS or S3 to support SFTP - UAT</td><td>Add EFS or S3 storage solution to support SFTP downloads from ftp site – current solution supports F...</td><td></td><td>S-0034000</td><td>Amazon Elastic File System (EFS);Amazon S3</td><td></td><td>Prospect</td><td>Approved</td><td>$20</td><td>Managed Services;Professional Services</td><td>Storage & Backup</td><td>Net New Business</td><td>Edward Stanley</td><td>Media & Entertainment</td><td>Adam Stephenson</td></tr>
+<tr><td>O7580079</td><td>06/11/2025</td><td>Lendscape Limited 2025</td><td>Q2 RAPID PILOT</td><td>Lendscape provides an end-to-end commercial-finance platform that automates receivables, asset-based...</td><td></td><td>S-0053879</td><td>Amazon Bedrock - Agents;Amazon Bedrock - Amazon Models;Amazon Q Business</td><td></td><td>Prospect</td><td>Approved</td><td>$25</td><td>Professional Services</td><td>AI Machine Learning and Analytics</td><td>Net New Business</td><td>Peter Tizard</td><td>Financial Services</td><td>Adam Dunn</td></tr>
+<tr><td>O7580378</td><td>06/11/2025</td><td>Altia Solutions Ltd</td><td>Q2 RAPID PILOT</td><td>Altia Intel is a UK-based developer of investigation and intelligence-management software whose port...</td><td></td><td>S-0053879</td><td>Amazon Bedrock - Agents;Amazon Bedrock - Amazon Models;Amazon Q Business</td><td></td><td>Prospect</td><td>Approved</td><td>$25</td><td>Professional Services</td><td>AI Machine Learning and Analytics</td><td>Net New Business</td><td>Fernando Mendoza ocete</td><td>Software & Internet</td><td>Adam Dunn</td></tr>
+<tr><td>O10039667</td><td>14/10/2025</td><td>Domestic and General</td><td>Domestic and General PPA</td><td>Looking for enterprise support and volume discount</td><td></td><td>S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Approved</td><td>$500</td><td>Managed Services</td><td>Cloud Management Tools</td><td>Net New Business</td><td>Neil Shingadia</td><td>Financial Services</td><td>charlie saunders</td></tr>
+<tr><td>O7821448</td><td>26/06/2025</td><td>Pebble Learning LTD( Clone )</td><td>Data, AI and product strategy</td><td>The engagement is to provide remediations services to fix the platform for the issues below
+
+Fragmen...</td><td></td><td>S-0002146;S-0054566;S-0072315</td><td>nan</td><td></td><td>Prospect</td><td>Approved</td><td>$100</td><td>Professional Services</td><td>Big Data: Data Warehouse / Data Integration / ETL / Data Lake / BI</td><td>Net New Business</td><td>John Afolabi</td><td>Education</td><td>charlie saunders</td></tr>
+<tr><td>O7821421</td><td>26/06/2025</td><td>Pebble Learning LTD</td><td>Data, AI and product strategy</td><td>The initial engagement is to provide consultancy services to identify solutions to the issues below
+...</td><td></td><td>S-0072598</td><td>nan</td><td></td><td>Prospect</td><td>Approved</td><td>$100</td><td>Professional Services</td><td>Big Data: Data Warehouse / Data Integration / ETL / Data Lake / BI</td><td>Net New Business</td><td>John Afolabi</td><td>Education</td><td>charlie saunders</td></tr>
+<tr><td>O10039599</td><td>14/10/2025</td><td>Policy Expert</td><td>AI Use cases for call center</td><td>evaluating AI Use cases for call center</td><td></td><td>S-0068971;S-0072213</td><td>Amazon Bedrock - AgentCore;Amazon Bedrock - AgentCore Gateway;Amazon Bedrock - Agents</td><td></td><td>Prospect</td><td>Approved</td><td>$500</td><td>Professional Services</td><td>AI Machine Learning and Analytics</td><td>Net New Business</td><td>Neil Shingadia</td><td>Financial Services</td><td>charlie saunders</td></tr>
+<tr><td>O10039932</td><td>14/10/2025</td><td>Bristow</td><td>Bristow Managed Billing</td><td>Discounted and managed billing</td><td></td><td>S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Approved</td><td>$500</td><td>Managed Services</td><td>AI Machine Learning and Analytics</td><td>Net New Business</td><td>Jack Pullen</td><td>Transportation & Logistics</td><td>charlie saunders</td></tr>
+<tr><td>O10039034</td><td>14/10/2025</td><td>DeHavilland Information Services Limited</td><td>DH Resource Aug for Apollo support</td><td>Client needs managed service / support</td><td></td><td>S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Approved</td><td>$100</td><td>Managed Services</td><td>AI Machine Learning and Analytics</td><td>Net New Business</td><td>Sara Richeldi</td><td>Professional Services</td><td>charlie saunders</td></tr>
+<tr><td>O10039284</td><td>14/10/2025</td><td>Bristow Group</td><td>Bristow AWS Managed Service</td><td>Client need a managed service to support their AWS environment, Colibri have been told we are prefer...</td><td></td><td>S-0054566;S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Approved</td><td>$500</td><td>Managed Services</td><td>Cloud Management Tools</td><td>Net New Business</td><td>Jack Pullen</td><td>Transportation & Logistics</td><td>charlie saunders</td></tr>
+<tr><td>O7911024</td><td>07/02/2025</td><td>TURNKEY INSOLVENCY SERVICES LIMITED( Clone )</td><td>Q2 RAPID PILOT</td><td>Turnkey is the leading provider of insolvency protection  software — from the big four, to single pe...</td><td></td><td>S-0072315</td><td>Amazon Redshift</td><td></td><td>Committed</td><td>Approved</td><td>$25</td><td>Professional Services</td><td>Big Data: Data Warehouse / Data Integration / ETL / Data Lake / BI</td><td>Net New Business</td><td>Camilo Velasquez mejia</td><td>Software & Internet</td><td>charlie saunders</td></tr>
+<tr><td>O7537728</td><td>06/09/2025</td><td>TURNKEY INSOLVENCY SERVICES LIMITED</td><td>Q2 RAPID PILOT</td><td>Turnkey is the leading provider of insolvency protection  software — from the big four, to single pe...</td><td></td><td>S-0053879;S-0076188</td><td>Amazon Bedrock;Amazon Bedrock - Agents;Amazon Bedrock - Amazon Models</td><td></td><td>Committed</td><td>Approved</td><td>$25</td><td>Professional Services</td><td>AI Machine Learning and Analytics</td><td>Net New Business</td><td>Camilo Velasquez mejia</td><td>Software & Internet</td><td>charlie saunders</td></tr>
+<tr><td>O9999702</td><td>13/10/2025</td><td>Recognise Bank Limited</td><td>Data Platform</td><td>Recognise Bank is building a modern data platform to deliver a secure, 
+governed, and scalable data ...</td><td>Partner Opportunity Acceleration Funded</td><td>S-0023002;S-0034000;S-0072315</td><td>Amazon Data Firehose;Amazon EventBridge;Amazon Kinesis Data Streams (KDS);Amazon S3;AWS Lambda;AWS Step Functions;AWS Transfer Family (SFTP, FTPS, FTP)</td><td>Pricing calculator here;
+https://calculator.aws/#/estimate?id=044ab36115509b3500daf191a43e509d3fa522...</td><td>Prospect</td><td>Approved</td><td>$27,626</td><td>Managed Services;Professional Services;Resell</td><td>Big Data: Data Warehouse / Data Integration / ETL / Data Lake / BI</td><td>Net New Business</td><td>Rugile Bausyte</td><td>Financial Services</td><td>Adam Dunn</td></tr>
+<tr><td>O7910909</td><td>07/02/2025</td><td>Cornwall Insight Limited( Clone )</td><td>Q2 RAPID PILOT</td><td>Cornwall Insight is an independent energy-market intelligence firm that supplies subscription analys...</td><td></td><td>S-0053879;S-0072315</td><td>Amazon Redshift</td><td></td><td>Committed</td><td>Approved</td><td>$250</td><td>Professional Services</td><td>Big Data: Data Warehouse / Data Integration / ETL / Data Lake / BI</td><td>Net New Business</td><td>Raul Mancero</td><td>Professional Services</td><td>Adam Dunn</td></tr>
+<tr><td>O7580123</td><td>06/11/2025</td><td>WALLSTREETDOCS LTD</td><td>Q2 RAPID PILOT</td><td>WSD (formerly WallStreetDocs) delivers SaaS workflow and document-automation solutions that generate...</td><td></td><td>S-0053879</td><td>Amazon Bedrock - Agents;Amazon Bedrock - Amazon Models;Amazon Q Business;Amazon EC2 - C5n;Amazon EC2 Linux</td><td></td><td>Prospect</td><td>Approved</td><td>$25</td><td>Professional Services</td><td>AI Machine Learning and Analytics</td><td>Net New Business</td><td>Oliver Jeffreys</td><td>Software & Internet</td><td>Adam Dunn</td></tr>
+<tr><td>O7591919</td><td>06/12/2025</td><td>DeHavilland Information Services Limited</td><td>Q2 RAPID PILOT</td><td>Use case is to use Generative AI to build 4d Sentiment analysis view. The idea that needs exploring ...</td><td></td><td>S-0053879;S-0076188</td><td>Amazon Bedrock;Amazon Bedrock - Agents;Amazon Bedrock - Amazon Models</td><td></td><td>Committed</td><td>Approved</td><td>$25</td><td>Professional Services</td><td>AI Machine Learning and Analytics</td><td>Net New Business</td><td>Sara Richeldi</td><td>Professional Services</td><td>Adam Dunn</td></tr>
+<tr><td>O7498686</td><td>06/06/2025</td><td>Tax Systems Ltd</td><td>Q2 RAPID PILOT</td><td>Generative AI Assessment
+
+Tax Systems provides enterprise tax automation software—especially for cor...</td><td></td><td>S-0053879;S-0076188</td><td>Amazon Bedrock - Agents;Amazon Bedrock - Amazon Models;Amazon Q Business</td><td></td><td>Committed</td><td>Approved</td><td>$25</td><td>Professional Services</td><td>AI Machine Learning and Analytics</td><td>Net New Business</td><td>Joshua Chappatte</td><td>Financial Services</td><td>Adam Dunn</td></tr>
+<tr><td>O7911126</td><td>07/02/2025</td><td>Tax Systems Ltd</td><td>Data Platform Build</td><td>Tax Systems provides enterprise tax automation software—especially for corporate tax and compliance—...</td><td></td><td>S-0072315</td><td>Amazon Redshift</td><td></td><td>Prospect</td><td>Approved</td><td>$250</td><td>Professional Services</td><td>AI Machine Learning and Analytics</td><td>Net New Business</td><td>Joshua Chappatte</td><td>Financial Services</td><td>Adam Dunn</td></tr>
+<tr><td>O7911364</td><td>07/02/2025</td><td>Tax Systems Ltd</td><td>Cloud Managed Service</td><td>Provide cloud managed services for all AWS solutions</td><td></td><td>S-0034000</td><td>nan</td><td></td><td>Prospect</td><td>Approved</td><td>$25</td><td>Professional Services</td><td>Centralized Operations Management</td><td>Net New Business</td><td>Joshua Chappatte</td><td>Financial Services</td><td>Adam Dunn</td></tr>
+<tr><td>O7580336</td><td>06/11/2025</td><td>Cornwall Insight Limited</td><td>Q2 RAPID PILOT</td><td>Cornwall Insight is an independent energy-market intelligence firm that supplies subscription analys...</td><td></td><td>S-0053879;S-0076188</td><td>Amazon Bedrock - Agents;Amazon Bedrock - Amazon Models;Amazon Q Business</td><td></td><td>Qualified</td><td>Approved</td><td>$25</td><td>Professional Services</td><td>AI Machine Learning and Analytics</td><td>Net New Business</td><td>Raul Mancero</td><td>Professional Services</td><td>Adam Dunn</td></tr>
+<tr><td>O7580197</td><td>06/11/2025</td><td>EQUE2 LIMITED</td><td>Q2 RAPID PILOT</td><td>Eque2 – a UK-based, market-leading vendor of cloud construction ERP, estimating and house-building s...</td><td></td><td>S-0053879</td><td>Amazon Bedrock - Agents;Amazon Bedrock - Amazon Models;Amazon Q Business</td><td></td><td>Prospect</td><td>Approved</td><td>$25</td><td>Professional Services</td><td>AI Machine Learning and Analytics</td><td>Net New Business</td><td>Raul Mancero</td><td>Software & Internet</td><td>Adam Dunn</td></tr>
+<tr><td>O7580266</td><td>06/11/2025</td><td>https://cubelogic.com</td><td>Q2 RAPID PILOT</td><td>CubeLogic develops RiskCubed, a real-time credit, market and liquidity-risk suite used by energy, co...</td><td></td><td>S-0053879</td><td>Amazon Bedrock - Agents;Amazon Bedrock - Amazon Models;Amazon Q Business</td><td></td><td>Prospect</td><td>Approved</td><td>$25</td><td>Professional Services</td><td>AI Machine Learning and Analytics</td><td>Net New Business</td><td>Camilo Velasquez mejia</td><td>Financial Services</td><td>Adam Dunn</td></tr>
+<tr><td>O7911089</td><td>07/02/2025</td><td>DJB STRATEGIES LTD</td><td>Data Platform Build</td><td>Creating an auto-healing ingestion pipeline for licensed media and news content, including things li...</td><td></td><td>S-0072315</td><td>Amazon Redshift</td><td></td><td>Prospect</td><td>Approved</td><td>$250</td><td>Professional Services</td><td>AI Machine Learning and Analytics</td><td>Net New Business</td><td>Raul Mancero</td><td>Professional Services</td><td>Adam Dunn</td></tr>
+<tr><td>O7596501</td><td>06/12/2025</td><td>Mecenat International AB</td><td>Q2 RAPID PILOT</td><td>Generative AI could potentially cluster click-stream and redemption data on the fly to craft hyper-p...</td><td></td><td>S-0053879</td><td>Amazon Bedrock;Amazon Bedrock - Agents;Amazon Bedrock - Amazon Models</td><td></td><td>Prospect</td><td>Approved</td><td>$25</td><td>Professional Services</td><td>AI Machine Learning and Analytics</td><td>Net New Business</td><td>Anish Desai</td><td>Professional Services</td><td>Adam Dunn</td></tr>
+<tr><td>O7498590</td><td>06/06/2025</td><td>Proforest</td><td>Q2 RAPID PILOT</td><td>Generative AI Assessment
+
+Proforest is a non-profit organisation that supports responsible sourcing ...</td><td></td><td>S-0053879</td><td>Amazon Bedrock - Agents;Amazon Bedrock - Amazon Models;Amazon Q Business</td><td></td><td>Prospect</td><td>Approved</td><td>$25</td><td>Professional Services</td><td>AI Machine Learning and Analytics</td><td>Net New Business</td><td>Camilo Medina Cristancho</td><td>Agriculture</td><td>Adam Dunn</td></tr>
+<tr><td>O8086070</td><td>14/07/2025</td><td>Capita PLC</td><td>Capita Data Centre Transformation</td><td>Capita Data Centre Transformation, 6000 VMs across a host of Capita and Customer Managed Service sol...</td><td>Migration Acceleration Program</td><td>S-0012436</td><td>nan</td><td>#Ambassador:jason.oliver@colibridigital.io</td><td>Prospect</td><td>Approved</td><td>$500</td><td>Managed Services;Professional Services;Resell</td><td>Migration / Database Migration</td><td>Net New Business</td><td>Adrian Hanley</td><td>Professional Services</td><td>Adam Dunn</td></tr>
+<tr><td>O3317899</td><td>03/05/2024</td><td>Rial Delivery Group</td><td>Darwin, LINX, TMS Integration and Data Translation</td><td>Removal of multiple rekeying of data between systems between RDG, National Rail & TOCs</td><td></td><td>S-0010086;S-0013697;S-0023002;S-0034000</td><td>AWS Lambda</td><td>#Ambassador:jason.oliver@nasstar.com</td><td>Prospect</td><td>Approved</td><td>$10,000</td><td>SaaS or PaaS;Managed Services;Professional Services</td><td>Containers & Serverless</td><td>Net New Business</td><td>Jason Thoday</td><td>Transportation & Logistics</td><td>Steve Meek</td></tr>
+</tbody></table>
+</div>
+<div class="excluded-ops-section" style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px;">
+<h2 style="color: #856404;">ℹ️ Excluded Legacy Opportunities</h2>
+<p style="color: #856404;">The following <strong>1 opportunities</strong> are still visible in ACE but are <strong>excluded from this report</strong>. These are old opportunities that cannot be closed due to technical reasons. A support ticket has been raised with AWS. <strong>Please ignore these opportunities</strong> - they do not count toward our metrics.</p>
+<table class="opportunities-table">
+<thead><tr><th>Opportunity ID</th><th>Partner Project Title</th><th>Customer</th><th>Stage</th></tr></thead>
+<tbody>
+<tr><td>O1158289</td><td>Marketing Analytics Platform</td><td>ONE CLICK ANALYTICS, INC</td><td>Prospect</td></tr>
+</tbody></table>
+</div>
+<div class="footer"><p>Many thanks,<br>Gianluca</p></div></body></html>

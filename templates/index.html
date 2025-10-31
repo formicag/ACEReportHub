@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACE Report Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 ACE Report Hub</h1>
+            <p class="subtitle">Weekly AWS Partner Central ACE Hygiene Reports</p>
+        </header>
+
+        <div class="info-banner">
+            <strong>Excluded Legacy Ops:</strong> {{ excluded_ops_count }} opportunities are tracked but excluded from reports
+        </div>
+
+        <!-- SIMPLE EMAIL TEST BUTTON -->
+        <div class="section" style="background: #f0f8ff; border: 2px solid #4a90e2;">
+            <h2>🧪 Email System Test</h2>
+            <p>Send a basic test email to verify SMTP works</p>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <input type="text" id="testEmailPassword" placeholder="Enter Gmail App Password" style="flex: 1; padding: 10px; font-family: monospace; border: 1px solid #ccc; border-radius: 4px;">
+                <button onclick="sendBasicTestEmail()" class="btn btn-warning">
+                    📧 Send Basic Test Email
+                </button>
+            </div>
+            <div id="testEmailStatus" class="status-message"></div>
+        </div>
+
+        {% if not has_baseline %}
+        <!-- FIRST TIME SETUP -->
+        <div class="section setup-section">
+            <h2>📥 First Time Setup</h2>
+            <p>Welcome! To get started, import your first baseline ACE report.</p>
+            <p>This will form the foundation for tracking weekly changes.</p>
+
+            <div class="upload-area">
+                <input type="file" id="baselineFile" accept=".xlsx" style="display: none;">
+                <button onclick="document.getElementById('baselineFile').click()" class="btn btn-primary">
+                    Choose Baseline File
+                </button>
+                <p id="baselineFileName" class="file-name"></p>
+            </div>
+
+            <button id="uploadBaselineBtn" class="btn btn-success" style="display: none;">
+                Import Baseline
+            </button>
+
+            <div id="baselineStatus" class="status-message"></div>
+        </div>
+
+        {% else %}
+        <!-- NORMAL WORKFLOW -->
+        <div class="section">
+            <h2>📊 Last Report</h2>
+            <div class="stats-card">
+                <div class="stat">
+                    <div class="stat-label">Sent Date</div>
+                    <div class="stat-value">{{ last_snapshot.snapshot_date[:10] }}</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Total Open Ops</div>
+                    <div class="stat-value">{{ last_snapshot.total_reportable_ops }}</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Avg Days</div>
+                    <div class="stat-value">{{ "%.1f"|format(last_snapshot.avg_days_since_update) }}</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Stale Ops</div>
+                    <div class="stat-value">{{ last_snapshot.stale_ops_count }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📧 Email Distribution List</h2>
+            <button onclick="openDistributionModal()" class="btn btn-secondary">
+                Manage Recipients
+            </button>
+            <p class="subtitle" style="margin-top: 10px;">Current recipients: <span id="recipientCount">Loading...</span></p>
+        </div>
+
+        <div class="section">
+            <h2>📤 Generate Weekly Report</h2>
+            <p>Upload this week's ACE export to generate your weekly hygiene report.</p>
+
+            <div class="upload-area">
+                <input type="file" id="weeklyFile" accept=".xlsx" style="display: none;">
+                <button onclick="document.getElementById('weeklyFile').click()" class="btn btn-primary">
+                    Choose ACE Export File
+                </button>
+                <p id="weeklyFileName" class="file-name"></p>
+            </div>
+
+            <button id="uploadWeeklyBtn" class="btn btn-success" style="display: none;">
+                Generate Report
+            </button>
+
+            <div id="weeklyStatus" class="status-message"></div>
+
+            <div id="reportSummary" style="display: none;" class="report-summary">
+                <h3>Report Summary</h3>
+                <div id="summaryContent"></div>
+
+                <div class="action-buttons">
+                    <button onclick="previewEmail()" class="btn btn-secondary">
+                        👁️ Preview Email
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📜 History</h2>
+            <p>View past reports: <a href="/history">View All Snapshots ({{ all_snapshots|length }})</a></p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Distribution List Modal -->
+    <div id="distributionModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📧 Manage Email Distribution List</h2>
+                <button onclick="closeDistributionModal()" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="distribution-section">
+                    <h3>TO Recipients</h3>
+                    <textarea id="toRecipients" rows="6" placeholder="Enter email addresses, one per line"></textarea>
+                </div>
+                <div class="distribution-section">
+                    <h3>CC Recipients</h3>
+                    <textarea id="ccRecipients" rows="6" placeholder="Enter email addresses, one per line"></textarea>
+                </div>
+                <div id="distributionStatus" class="status-message"></div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeDistributionModal()" class="btn btn-secondary">Cancel</button>
+                <button onclick="saveDistributionList()" class="btn btn-success">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // BASIC EMAIL TEST
+        async function sendBasicTestEmail() {
+            const password = document.getElementById('testEmailPassword').value;
+            if (!password) {
+                alert('Please enter your Gmail App Password');
+                return;
+            }
+
+            const statusEl = document.getElementById('testEmailStatus');
+            statusEl.textContent = 'Sending basic test email...';
+            statusEl.className = 'status-message info';
+
+            try {
+                const response = await fetch('/send_basic_test_email', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    statusEl.textContent = '✅ ' + data.message;
+                    statusEl.className = 'status-message success';
+                } else {
+                    statusEl.textContent = '❌ Error: ' + data.error;
+                    statusEl.className = 'status-message error';
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ Error: ' + error.message;
+                statusEl.className = 'status-message error';
+            }
+        }
+
+        // Baseline file upload
+        document.getElementById('baselineFile')?.addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name;
+            if (fileName) {
+                document.getElementById('baselineFileName').textContent = fileName;
+                document.getElementById('uploadBaselineBtn').style.display = 'block';
+            }
+        });
+
+        document.getElementById('uploadBaselineBtn')?.addEventListener('click', async function() {
+            const fileInput = document.getElementById('baselineFile');
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const statusEl = document.getElementById('baselineStatus');
+            statusEl.textContent = 'Importing baseline...';
+            statusEl.className = 'status-message info';
+
+            try {
+                const response = await fetch('/upload_baseline', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    statusEl.textContent = data.message;
+                    statusEl.className = 'status-message success';
+
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    statusEl.textContent = 'Error: ' + data.error;
+                    statusEl.className = 'status-message error';
+                }
+            } catch (error) {
+                statusEl.textContent = 'Error: ' + error.message;
+                statusEl.className = 'status-message error';
+            }
+        });
+
+        // Weekly file upload
+        document.getElementById('weeklyFile')?.addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name;
+            if (fileName) {
+                document.getElementById('weeklyFileName').textContent = fileName;
+                document.getElementById('uploadWeeklyBtn').style.display = 'block';
+            }
+        });
+
+        document.getElementById('uploadWeeklyBtn')?.addEventListener('click', async function() {
+            const fileInput = document.getElementById('weeklyFile');
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const statusEl = document.getElementById('weeklyStatus');
+            statusEl.textContent = 'Processing report...';
+            statusEl.className = 'status-message info';
+
+            try {
+                const response = await fetch('/upload_weekly', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    statusEl.textContent = data.message;
+                    statusEl.className = 'status-message success';
+
+                    // Show summary
+                    const summaryDiv = document.getElementById('summaryContent');
+                    let html = '<div class="stats-card">';
+                    html += `<div class="stat"><div class="stat-label">Open Ops</div><div class="stat-value">${data.stats.total_reportable_ops}</div></div>`;
+                    html += `<div class="stat"><div class="stat-label">Avg Days</div><div class="stat-value">${data.stats.avg_days_since_update.toFixed(1)}</div></div>`;
+                    html += `<div class="stat"><div class="stat-label">Stale Ops</div><div class="stat-value">${data.stats.stale_ops_count}</div></div>`;
+                    html += '</div>';
+
+                    if (data.comparison) {
+                        html += '<h4>Changes Since Last Week</h4>';
+                        html += `<p>New: ${data.comparison.new_ops_count} | Closed: ${data.comparison.closed_ops_count} | Status Changes: ${data.comparison.status_changes_count}</p>`;
+                    }
+
+                    summaryDiv.innerHTML = html;
+                    document.getElementById('reportSummary').style.display = 'block';
+                } else {
+                    statusEl.textContent = 'Error: ' + data.error;
+                    statusEl.className = 'status-message error';
+                }
+            } catch (error) {
+                statusEl.textContent = 'Error: ' + error.message;
+                statusEl.className = 'status-message error';
+            }
+        });
+
+        function previewEmail() {
+            window.open('/preview_email', '_blank');
+        }
+
+        // Distribution List Management
+        async function loadDistributionList() {
+            try {
+                const response = await fetch('/get_distribution_list');
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update count
+                    const count = data.to.length + data.cc.length;
+                    const countEl = document.getElementById('recipientCount');
+                    if (countEl) {
+                        countEl.textContent = `${data.to.length} TO, ${data.cc.length} CC (${count} total)`;
+                    }
+                    return data;
+                }
+            } catch (error) {
+                console.error('Error loading distribution list:', error);
+            }
+        }
+
+        async function openDistributionModal() {
+            const data = await loadDistributionList();
+            if (data && data.success) {
+                document.getElementById('toRecipients').value = data.to.join('\n');
+                document.getElementById('ccRecipients').value = data.cc.join('\n');
+                document.getElementById('distributionModal').style.display = 'flex';
+            }
+        }
+
+        function closeDistributionModal() {
+            document.getElementById('distributionModal').style.display = 'none';
+            document.getElementById('distributionStatus').textContent = '';
+            document.getElementById('distributionStatus').className = 'status-message';
+        }
+
+        async function saveDistributionList() {
+            const toText = document.getElementById('toRecipients').value;
+            const ccText = document.getElementById('ccRecipients').value;
+
+            // Parse emails - one per line, filter empty lines
+            const toEmails = toText.split('\n').map(e => e.trim()).filter(e => e);
+            const ccEmails = ccText.split('\n').map(e => e.trim()).filter(e => e);
+
+            const statusEl = document.getElementById('distributionStatus');
+            statusEl.textContent = 'Saving...';
+            statusEl.className = 'status-message info';
+
+            try {
+                const response = await fetch('/update_distribution_list', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        to: toEmails,
+                        cc: ccEmails
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    statusEl.textContent = data.message;
+                    statusEl.className = 'status-message success';
+
+                    // Reload count
+                    await loadDistributionList();
+
+                    setTimeout(() => {
+                        closeDistributionModal();
+                    }, 1500);
+                } else {
+                    statusEl.textContent = 'Error: ' + data.error;
+                    statusEl.className = 'status-message error';
+                }
+            } catch (error) {
+                statusEl.textContent = 'Error: ' + error.message;
+                statusEl.className = 'status-message error';
+            }
+        }
+
+        // Load distribution list count on page load
+        if (document.getElementById('recipientCount')) {
+            loadDistributionList();
+        }
+    </script>
+</body>
+</html>

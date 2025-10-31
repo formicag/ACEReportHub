@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Preview - ACE Report</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📧 Email Preview</h1>
+            <p>Review the email before sending</p>
+        </header>
+
+        <div class="email-actions">
+            <div class="password-section">
+                <label for="emailPassword">Email Password (App Password):</label>
+                <input type="text" id="emailPassword" placeholder="Enter your app password" style="font-family: monospace;">
+            </div>
+
+            <div class="button-group">
+                <button onclick="sendTestEmail()" class="btn btn-warning">
+                    🧪 Send Test Email (to me only)
+                </button>
+                <button onclick="sendEmailToAll()" class="btn btn-danger" disabled>
+                    📤 Send to All Recipients (DISABLED)
+                </button>
+                <button onclick="window.close()" class="btn btn-secondary">
+                    Cancel
+                </button>
+            </div>
+
+            <div id="sendStatus" class="status-message"></div>
+        </div>
+
+        <div class="email-preview-box">
+            <h3>Email Preview ({{ stale_count }} stale opportunities):</h3>
+            <div class="email-content">
+                {{ email_html|safe }}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function sendTestEmail() {
+            const password = document.getElementById('emailPassword').value;
+            if (!password) {
+                alert('Please enter your email password');
+                return;
+            }
+
+            const statusEl = document.getElementById('sendStatus');
+            statusEl.textContent = 'Sending test email...';
+            statusEl.className = 'status-message info';
+
+            try {
+                const response = await fetch('/send_test_email', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    statusEl.textContent = '✅ ' + data.message;
+                    statusEl.className = 'status-message success';
+                } else {
+                    statusEl.textContent = '❌ Error: ' + data.error;
+                    statusEl.className = 'status-message error';
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ Error: ' + error.message;
+                statusEl.className = 'status-message error';
+            }
+        }
+
+        async function sendEmailToAll() {
+            const password = document.getElementById('emailPassword').value;
+            if (!password) {
+                alert('Please enter your email password');
+                return;
+            }
+
+            if (!confirm('Send email to ALL recipients? This will save the snapshot to the database.')) {
+                return;
+            }
+
+            const statusEl = document.getElementById('sendStatus');
+            statusEl.textContent = 'Sending email to all recipients...';
+            statusEl.className = 'status-message info';
+
+            try {
+                const response = await fetch('/send_email', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    statusEl.textContent = '✅ ' + data.message;
+                    statusEl.className = 'status-message success';
+
+                    setTimeout(() => {
+                        window.close();
+                        window.opener.location.reload();
+                    }, 3000);
+                } else {
+                    statusEl.textContent = '❌ Error: ' + data.error;
+                    statusEl.className = 'status-message error';
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ Error: ' + error.message;
+                statusEl.className = 'status-message error';
+            }
+        }
+    </script>
+</body>
+</html>

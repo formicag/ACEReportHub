@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report History - ACE Report Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📜 Report History</h1>
+            <p><a href="/">← Back to Dashboard</a></p>
+        </header>
+
+        <div class="section">
+            <h2>All Sent Reports ({{ snapshots|length }})</h2>
+
+            {% if snapshots|length == 0 %}
+            <p>No reports sent yet.</p>
+            {% else %}
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Date Sent</th>
+                        <th>ACE File</th>
+                        <th>Total Ops</th>
+                        <th>Reportable</th>
+                        <th>Avg Days</th>
+                        <th>Stale Ops</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for snapshot in snapshots %}
+                    <tr>
+                        <td>{{ snapshot.snapshot_id }}</td>
+                        <td>{{ snapshot.snapshot_date[:10] }}</td>
+                        <td>{{ snapshot.ace_export_filename }}</td>
+                        <td>{{ snapshot.total_open_ops }}</td>
+                        <td>{{ snapshot.total_reportable_ops }}</td>
+                        <td>{{ "%.1f"|format(snapshot.avg_days_since_update) }}</td>
+                        <td>{{ snapshot.stale_ops_count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
