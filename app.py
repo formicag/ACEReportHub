@@ -495,8 +495,12 @@ def send_email_route():
         from email.mime.text import MIMEText
         from email_config import EMAIL_CONFIG
 
+        # Generate dynamic subject with current date
+        current_date = datetime.now().strftime('%d %b %Y')
+        subject = f"ACE Hygiene Report - {current_date}"
+
         msg = MIMEMultipart('alternative')
-        msg['Subject'] = EMAIL_CONFIG['subject']
+        msg['Subject'] = subject
         msg['From'] = f"{EMAIL_CONFIG['from_name']} <{EMAIL_CONFIG['from_email']}>"
         msg['To'] = ', '.join(EMAIL_CONFIG['to'])
         if EMAIL_CONFIG['cc']:
