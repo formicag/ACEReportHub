@@ -5,6 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Email Preview - ACE Report</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .recipient-list {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .recipient-list h3 {
+            margin-top: 0;
+            color: #856404;
+        }
+        .recipient-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        .recipient-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid #ffeaa7;
+        }
+        .recipient-list li:last-child {
+            border-bottom: none;
+        }
+        .warning-box {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            color: #721c24;
+        }
+        .confirmation-input {
+            margin: 15px 0;
+        }
+        .confirmation-input input {
+            padding: 10px;
+            font-size: 16px;
+            width: 200px;
+            text-align: center;
+            border: 2px solid #dc3545;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -12,6 +54,21 @@
             <h1>📧 Email Preview</h1>
             <p>Review the email before sending</p>
         </header>
+
+        <div class="recipient-list" id="recipientList" style="display:none;">
+            <h3>⚠️ EMAIL WILL BE SENT TO:</h3>
+            <div>
+                <strong>TO Recipients:</strong>
+                <ul id="toList"></ul>
+            </div>
+            <div>
+                <strong>CC Recipients:</strong>
+                <ul id="ccList"></ul>
+            </div>
+            <p style="margin-top: 15px; font-weight: bold; color: #856404;">
+                Total recipients: <span id="totalCount"></span>
+            </p>
+        </div>
 
         <div class="email-actions">
             <div class="password-section">
@@ -23,8 +80,11 @@
                 <button onclick="sendTestEmail()" class="btn btn-warning">
                     🧪 Send Test Email (to me only)
                 </button>
-                <button onclick="sendEmailToAll()" class="btn btn-danger" disabled>
-                    📤 Send to All Recipients (DISABLED)
+                <button onclick="showRecipients()" class="btn btn-primary">
+                    👥 View Recipients List
+                </button>
+                <button onclick="prepareToSendToAll()" class="btn btn-danger">
+                    📤 Send to All Recipients
                 </button>
                 <button onclick="window.close()" class="btn btn-secondary">
                     Cancel
@@ -43,6 +103,54 @@
     </div>
 
     <script>
+        let recipientData = null;
+
+        // Load recipient list on page load
+        async function loadRecipients() {
+            try {
+                const response = await fetch('/get_distribution_list');
+                const data = await response.json();
+                if (data.success) {
+                    recipientData = data;
+                }
+            } catch (error) {
+                console.error('Failed to load recipients:', error);
+            }
+        }
+
+        // Show recipients in the UI
+        async function showRecipients() {
+            if (!recipientData) {
+                await loadRecipients();
+            }
+
+            const toList = document.getElementById('toList');
+            const ccList = document.getElementById('ccList');
+            const totalCount = document.getElementById('totalCount');
+            const recipientList = document.getElementById('recipientList');
+
+            toList.innerHTML = '';
+            ccList.innerHTML = '';
+
+            recipientData.to.forEach(email => {
+                const li = document.createElement('li');
+                li.textContent = email;
+                toList.appendChild(li);
+            });
+
+            recipientData.cc.forEach(email => {
+                const li = document.createElement('li');
+                li.textContent = email;
+                ccList.appendChild(li);
+            });
+
+            totalCount.textContent = recipientData.to.length + recipientData.cc.length;
+            recipientList.style.display = 'block';
+
+            // Scroll to recipient list
+            recipientList.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
         async function sendTestEmail() {
             const password = document.getElementById('emailPassword').value;
             if (!password) {
@@ -76,19 +184,76 @@
             }
         }
 
-        async function sendEmailToAll() {
+        async function prepareToSendToAll() {
             const password = document.getElementById('emailPassword').value;
             if (!password) {
-                alert('Please enter your email password');
+                alert('❌ ERROR: Please enter your email password first!');
                 return;
             }
 
-            if (!confirm('Send email to ALL recipients? This will save the snapshot to the database.')) {
+            // Load recipients if not already loaded
+            if (!recipientData) {
+                await loadRecipients();
+            }
+
+            // Build recipient list for confirmation
+            const toRecipients = recipientData.to.join('\n  • ');
+            const ccRecipients = recipientData.cc.join('\n  • ');
+            const totalRecipients = recipientData.to.length + recipientData.cc.length;
+
+            // FIRST CONFIRMATION - Show all recipients
+            const confirmMessage = `⚠️ CRITICAL CONFIRMATION ⚠️
+
+You are about to send this email to ${totalRecipients} recipients:
+
+TO Recipients (${recipientData.to.length}):
+  • ${toRecipients}
+
+CC Recipients (${recipientData.cc.length}):
+  • ${ccRecipients}
+
+This email will be sent to SENIOR LEADERSHIP at Nasstar and Colibri Digital.
+
+Do you want to proceed?`;
+
+            if (!confirm(confirmMessage)) {
                 return;
             }
 
+            // SECOND CONFIRMATION - Type to confirm
+            const confirmationText = prompt(`⚠️ FINAL CONFIRMATION ⚠️
+
+Type "SEND NOW" (all caps) to send this email to all ${totalRecipients} recipients.
+
+This action CANNOT BE UNDONE.
+
+Type "SEND NOW" to proceed, or click Cancel:`);
+
+            if (confirmationText !== 'SEND NOW') {
+                alert('❌ Send cancelled. You must type "SEND NOW" exactly to proceed.');
+                return;
+            }
+
+            // THIRD CONFIRMATION - Last chance
+            if (!confirm(`✅ FINAL CHECK
+
+Email will be sent to:
+- ${recipientData.to.length} TO recipients
+- ${recipientData.cc.length} CC recipients
+
+Subject: ACE Hygiene - New Report Format
+
+Click OK to SEND NOW, or Cancel to abort.`)) {
+                return;
+            }
+
+            // ALL CONFIRMATIONS PASSED - SEND THE EMAIL
+            await sendEmailToAll(password);
+        }
+
+        async function sendEmailToAll(password) {
             const statusEl = document.getElementById('sendStatus');
-            statusEl.textContent = 'Sending email to all recipients...';
+            statusEl.textContent = '📤 Sending email to all recipients... PLEASE WAIT...';
             statusEl.className = 'status-message info';
 
             try {
@@ -101,22 +266,29 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    statusEl.textContent = '✅ ' + data.message;
+                    statusEl.textContent = '✅ SUCCESS! ' + data.message;
                     statusEl.className = 'status-message success';
 
                     setTimeout(() => {
                         window.close();
-                        window.opener.location.reload();
+                        if (window.opener) {
+                            window.opener.location.reload();
+                        }
                     }, 3000);
                 } else {
-                    statusEl.textContent = '❌ Error: ' + data.error;
+                    statusEl.textContent = '❌ SEND FAILED: ' + data.error;
                     statusEl.className = 'status-message error';
+                    alert('❌ EMAIL SEND FAILED:\n\n' + data.error + '\n\nThe email was NOT sent. Please check the error and try again.');
                 }
             } catch (error) {
-                statusEl.textContent = '❌ Error: ' + error.message;
+                statusEl.textContent = '❌ ERROR: ' + error.message;
                 statusEl.className = 'status-message error';
+                alert('❌ CRITICAL ERROR:\n\n' + error.message + '\n\nThe email was NOT sent.');
             }
         }
+
+        // Load recipients when page loads
+        window.addEventListener('DOMContentLoaded', loadRecipients);
     </script>
 </body>
 </html>
