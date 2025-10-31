@@ -91,28 +91,33 @@ Closed lost this week: {closed_lost_count}"""
 
 Write a SHORT 2-3 sentence message that:
 
+STALE OPS HANDLING:
 IF STALE OPS = 0:
 - Say "Well done! No stale opportunities this week - 100% success!" or similar celebratory message
-- Mention if this is consecutive weeks at zero (e.g., "X weeks in a row!")
-- ALWAYS mention Well-Architected count if > 0 (e.g., "We have X Well-Architected opportunities")
-- ALWAYS mention RAPID PILOT count if > 0 (e.g., "and X RAPID PILOT opportunities")
+- If consecutive weeks at zero (2+): Mention this achievement (e.g., "X weeks in a row!")
 
 IF STALE OPS > 0:
-- State the number of stale opportunities that need updating
+- State the exact number of stale opportunities that need updating
 - Say "Please update these {stale_count} opportunities (detailed further down in the report) to get to 100% no stale ops"
-- ALWAYS mention Well-Architected count if > 0 (e.g., "including X Well-Architected opportunities")
-- ALWAYS mention RAPID PILOT count if > 0 (e.g., "and X RAPID PILOT opportunities")
-- If stale count decreased from last week: acknowledge the improvement
-- If stale count increased from last week: state it constructively
+- If stale count decreased from last week: Acknowledge the improvement constructively
+- If stale count increased from last week: State the facts constructively
 
-TONE: Professional, factual, measured
-- Use words like "good progress", "improvement" when appropriate
+ALWAYS INCLUDE:
+1. ALWAYS mention Well-Architected count if > 0 (e.g., "including X Well-Architected opportunities")
+2. ALWAYS mention RAPID PILOT count if > 0 (e.g., "and X RAPID PILOT opportunities")
+3. Mention other key activity metrics (new ops, launched, closed) only if noteworthy
+
+TONE GUIDELINES:
+- Professional, factual, measured - avoid enthusiastic words like "excellent", "strong", "great"
+- Use words like "good progress", "improvement", "trending positively/negatively"
 - Keep it concise and data-focused
+- Focus on facts and trends, not cheerleading
 
-IMPORTANT:
+IMPORTANT RESTRICTIONS:
 - Do NOT add any greeting like "Hi All" or "Hello team"
 - Do NOT add any closing statements or phrases like "pipeline remains healthy and active"
-- Return ONLY the 2-3 sentence factual commentary
+- Return ONLY the 2-3 sentence factual commentary about stale data trends
+- Avoid superlatives and overly positive language
 - Keep total length under 150 words"""
 
     try:
