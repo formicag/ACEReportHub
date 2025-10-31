@@ -95,15 +95,20 @@ def process_ace_file(filepath):
     arr_column = 'Estimated AWS Monthly Recurring Revenue'
     total_arr = df_open[arr_column].fillna(0).sum()
 
-    # Count Well-Architected opportunities (check APN Programs field)
-    wa_count = 0
-    if 'APN Programs' in df_open.columns:
-        wa_count = len(df_open[df_open['APN Programs'].fillna('').str.contains('Well-Architected', case=False, na=False)])
+    # CRITICAL FIX: Filter out excluded ops for WA/RAPID counts to match email tables
+    # Email generator filters these out, so stats must match what's shown in tables
+    from ace_database import EXCLUDED_OPS
+    df_reportable = df_open[~df_open['Opportunity id'].isin(EXCLUDED_OPS)]
 
-    # Count RAPID PILOT opportunities (check Partner Project Title field)
+    # Count Well-Architected opportunities (check APN Programs field) - REPORTABLE ONLY
+    wa_count = 0
+    if 'APN Programs' in df_reportable.columns:
+        wa_count = len(df_reportable[df_reportable['APN Programs'].fillna('').str.contains('Well-Architected', case=False, na=False)])
+
+    # Count RAPID PILOT opportunities (check Partner Project Title field) - REPORTABLE ONLY
     rapid_count = 0
-    if 'Partner Project Title' in df_open.columns:
-        rapid_count = len(df_open[df_open['Partner Project Title'].fillna('').str.contains('RAPID PILOT', case=False, na=False)])
+    if 'Partner Project Title' in df_reportable.columns:
+        rapid_count = len(df_reportable[df_reportable['Partner Project Title'].fillna('').str.contains('RAPID PILOT', case=False, na=False)])
 
     # Calculate statistics
     avg_days = df_open['days_since_update'].mean() if len(df_open) > 0 else 0
