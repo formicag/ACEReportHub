@@ -106,6 +106,8 @@ CRITICAL RULES - DO NOT VIOLATE:
 - NEVER use "Hi All" or "Hello team" or any greeting
 - NEVER use "your pipeline" or "your" - say "the pipeline" or "our pipeline" or "we have"
 - NEVER add closing statements like "pipeline remains healthy and active"
+- NEVER add generic statements about activity levels (e.g., "activity levels remain consistent")
+- NEVER add summary statements about pipeline health or status at the end
 - Return ONLY the 2-3 sentence factual commentary about stale data trends
 - Avoid superlatives and overly positive language
 - Keep total length under 150 words
