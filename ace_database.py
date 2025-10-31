@@ -305,6 +305,23 @@ class ACEDatabase:
         finally:
             conn.close()
 
+    def get_baseline_snapshot(self):
+        """Get the FIRST/BASELINE snapshot (for week-over-week comparison)."""
+        conn = self.connect()
+        try:
+            cursor = conn.cursor()
+
+            cursor.execute('''
+                SELECT * FROM weekly_snapshots
+                ORDER BY snapshot_id ASC
+                LIMIT 1
+            ''')
+
+            row = cursor.fetchone()
+            return dict(row) if row else None
+        finally:
+            conn.close()
+
     def get_snapshot_opportunities(self, snapshot_id):
         """Get all opportunities from a specific snapshot as DataFrame."""
         conn = self.connect()

@@ -143,25 +143,49 @@ def upload_weekly():
             df_stale_reportable = df_stale[~df_stale['Opportunity id'].isin(EXCLUDED_OPS)]
             print(f"[UPLOAD_WEEKLY] Step 3 DONE: Reportable: {len(df_reportable)}, Stale reportable: {len(df_stale_reportable)}")
 
-            # Compare with last snapshot if exists
-            print("[UPLOAD_WEEKLY] Step 4: Getting last snapshot for comparison...")
+            # Compare with BASELINE snapshot (ALWAYS the first one, never same-day uploads)
+            print("[UPLOAD_WEEKLY] Step 4: Getting BASELINE snapshot for comparison...")
             comparison_data = None
             previous_stats = None
-            last_snapshot = db.get_last_snapshot()
-            print(f"[UPLOAD_WEEKLY] Last snapshot exists: {last_snapshot is not None}")
+            baseline_snapshot = db.get_baseline_snapshot()
+            print(f"[UPLOAD_WEEKLY] Baseline snapshot exists: {baseline_snapshot is not None}")
 
-            if last_snapshot:
-                print("[UPLOAD_WEEKLY] Step 5: Comparing with last snapshot...")
-                comparison_data = db.compare_snapshots(df_all, last_snapshot['snapshot_id'])
-                previous_stats = last_snapshot
-                print(f"[UPLOAD_WEEKLY] Step 5 DONE: New: {len(comparison_data['new_ops'])}, Closed: {len(comparison_data['closed_ops'])}")
+            if baseline_snapshot:
+                # Parse dates to validate we're not comparing same-day reports
+                baseline_date = datetime.fromisoformat(baseline_snapshot['snapshot_date']).date()
+                current_date = datetime.now().date()
+
+                print("="*100)
+                print("[UPLOAD_WEEKLY] *** COMPARISON VALIDATION ***")
+                print(f"[UPLOAD_WEEKLY] Baseline report:")
+                print(f"[UPLOAD_WEEKLY]   - Snapshot ID: {baseline_snapshot['snapshot_id']}")
+                print(f"[UPLOAD_WEEKLY]   - File: {baseline_snapshot['ace_export_filename']}")
+                print(f"[UPLOAD_WEEKLY]   - Date: {baseline_date}")
+                print(f"[UPLOAD_WEEKLY] Current report:")
+                print(f"[UPLOAD_WEEKLY]   - File: {filename}")
+                print(f"[UPLOAD_WEEKLY]   - Date: {current_date}")
+                print(f"[UPLOAD_WEEKLY] Same day? {baseline_date == current_date}")
+                print("="*100)
+
+                if baseline_date == current_date:
+                    print("[UPLOAD_WEEKLY] ⚠️ WARNING: Cannot compare - both reports from same day!")
+                    print("[UPLOAD_WEEKLY] Comparison will be SKIPPED to prevent zero-delta bug")
+                    comparison_data = None
+                    previous_stats = None
+                else:
+                    days_apart = (current_date - baseline_date).days
+                    print(f"[UPLOAD_WEEKLY] ✓ Valid comparison: {days_apart} days apart")
+                    print("[UPLOAD_WEEKLY] Step 5: Comparing with BASELINE snapshot...")
+                    comparison_data = db.compare_snapshots(df_all, baseline_snapshot['snapshot_id'])
+                    previous_stats = baseline_snapshot
+                    print(f"[UPLOAD_WEEKLY] Step 5 DONE: New: {len(comparison_data['new_ops'])}, Closed: {len(comparison_data['closed_ops'])}")
 
             # Calculate consecutive weeks with no stale ops for preview
             print("[UPLOAD_WEEKLY] Step 6: Calculating consecutive weeks...")
             consecutive_weeks = 0
             if len(df_stale_reportable) == 0:
-                if last_snapshot and last_snapshot.get('consecutive_weeks_no_stale'):
-                    consecutive_weeks = last_snapshot['consecutive_weeks_no_stale'] + 1
+                if baseline_snapshot and baseline_snapshot.get('consecutive_weeks_no_stale'):
+                    consecutive_weeks = baseline_snapshot['consecutive_weeks_no_stale'] + 1
                 else:
                     consecutive_weeks = 1
             print(f"[UPLOAD_WEEKLY] Step 6 DONE: Consecutive weeks with no stale: {consecutive_weeks}")
@@ -251,18 +275,36 @@ def preview_email():
         df_stale = get_stale_opportunities(df_open, DAYS_THRESHOLD)
         print(f"[PREVIEW_EMAIL] Step 2 DONE: Found {len(df_stale)} stale ops")
 
-        # Get comparison data
-        print("[PREVIEW_EMAIL] Step 3: Getting comparison data...")
+        # Get comparison data from BASELINE snapshot
+        print("[PREVIEW_EMAIL] Step 3: Getting comparison data from BASELINE...")
         comparison_data = None
         previous_stats = None
-        last_snapshot = db.get_last_snapshot()
-        print(f"[PREVIEW_EMAIL] Step 3: Last snapshot exists: {last_snapshot is not None}")
+        baseline_snapshot = db.get_baseline_snapshot()
+        print(f"[PREVIEW_EMAIL] Step 3: Baseline snapshot exists: {baseline_snapshot is not None}")
 
-        if last_snapshot:
-            print("[PREVIEW_EMAIL] Step 4: Comparing snapshots...")
-            comparison_data = db.compare_snapshots(df_all, last_snapshot['snapshot_id'])
-            previous_stats = last_snapshot
-            print(f"[PREVIEW_EMAIL] Step 4 DONE: Comparison complete")
+        if baseline_snapshot:
+            # Validate not same-day comparison
+            baseline_date = datetime.fromisoformat(baseline_snapshot['snapshot_date']).date()
+            current_date = datetime.now().date()
+
+            print("="*100)
+            print("[PREVIEW_EMAIL] *** COMPARISON INFO ***")
+            print(f"[PREVIEW_EMAIL] Comparing to BASELINE:")
+            print(f"[PREVIEW_EMAIL]   - File: {baseline_snapshot['ace_export_filename']}")
+            print(f"[PREVIEW_EMAIL]   - Date: {baseline_date}")
+            print(f"[PREVIEW_EMAIL] Current date: {current_date}")
+            print(f"[PREVIEW_EMAIL] Same day? {baseline_date == current_date}")
+            print("="*100)
+
+            if baseline_date == current_date:
+                print("[PREVIEW_EMAIL] ⚠️ Skipping comparison - same day reports")
+                comparison_data = None
+                previous_stats = None
+            else:
+                print("[PREVIEW_EMAIL] Step 4: Comparing snapshots...")
+                comparison_data = db.compare_snapshots(df_all, baseline_snapshot['snapshot_id'])
+                previous_stats = baseline_snapshot
+                print(f"[PREVIEW_EMAIL] Step 4 DONE: Comparison complete")
 
         # Generate HTML
         print("[PREVIEW_EMAIL] Step 5: Preparing stats...")
