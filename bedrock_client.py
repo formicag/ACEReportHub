@@ -90,24 +90,30 @@ Closed lost this week: {closed_lost_count}"""
 {context}
 
 Write a SHORT 2-3 sentence message that:
-1. Briefly acknowledges the current stale data status
-2. If stale ops decreased or hit zero: Acknowledge the improvement with measured professional tone
-3. If consecutive weeks at zero (2+): Recognize the sustained improvement
-4. If stale ops increased: State the facts constructively
-5. ALWAYS mention Well-Architected count if > 0 (e.g., "including X Well-Architected opportunities")
-6. ALWAYS mention RAPID PILOT count if > 0 (e.g., "and X RAPID PILOT opportunities")
-7. Mention other key activity metrics (new ops, launched, closed) only if noteworthy
-8. TONE: Professional, factual, measured - avoid enthusiastic words like "excellent", "strong", "great"
-9. Use words like "good progress", "improvement", "trending positively/negatively"
-10. Keep it concise and data-focused
+
+IF STALE OPS = 0:
+- Say "Well done! No stale opportunities this week - 100% success!" or similar celebratory message
+- Mention if this is consecutive weeks at zero (e.g., "X weeks in a row!")
+- ALWAYS mention Well-Architected count if > 0 (e.g., "We have X Well-Architected opportunities")
+- ALWAYS mention RAPID PILOT count if > 0 (e.g., "and X RAPID PILOT opportunities")
+
+IF STALE OPS > 0:
+- State the number of stale opportunities that need updating
+- Say "Please update these {stale_count} opportunities (detailed further down in the report) to get to 100% no stale ops"
+- ALWAYS mention Well-Architected count if > 0 (e.g., "including X Well-Architected opportunities")
+- ALWAYS mention RAPID PILOT count if > 0 (e.g., "and X RAPID PILOT opportunities")
+- If stale count decreased from last week: acknowledge the improvement
+- If stale count increased from last week: state it constructively
+
+TONE: Professional, factual, measured
+- Use words like "good progress", "improvement" when appropriate
+- Keep it concise and data-focused
 
 IMPORTANT:
 - Do NOT add any greeting like "Hi All" or "Hello team"
 - Do NOT add any closing statements or phrases like "pipeline remains healthy and active"
-- Return ONLY the 2-3 sentence factual commentary about stale data trends
-- Avoid superlatives and overly positive language
-- Keep total length under 150 words
-- Focus on facts and trends, not cheerleading"""
+- Return ONLY the 2-3 sentence factual commentary
+- Keep total length under 150 words"""
 
     try:
         # Initialize Bedrock client with timeout configuration
