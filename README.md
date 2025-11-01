@@ -30,6 +30,7 @@ A Flask-based web application that processes AWS Partner Central ACE (Account Co
 - **Data Lineage**: Track source files and transformations
 
 ### Advanced Features
+- **Snapshot Dashboard**: Visual summary table of all imported ACE exports with key metrics
 - **Validation System**: Configurable data validation rules (currently disabled)
 - **Email Distribution Management**: Web-based recipient list management
 - **Duplicate Detection**: Prevents saving duplicate weekly reports
