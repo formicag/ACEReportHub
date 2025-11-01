@@ -548,7 +548,7 @@ def generate_email_html(df_stale, df_open, current_stats, previous_stats=None, c
         df_open: DataFrame with all open opportunities
         current_stats: Current week stats dict
         previous_stats: Previous week stats dict (optional)
-        comparison_data: Comparison data dict (optional)
+        comparison_data: Comparison data dict (optional
 
     Returns:
         HTML string for email body
@@ -561,6 +561,26 @@ def generate_email_html(df_stale, df_open, current_stats, previous_stats=None, c
     print(f"[EMAIL_GENERATOR] df_open columns: {df_open.columns.tolist()}")
     print(f"[EMAIL_GENERATOR] Total opportunities in df_open: {len(df_open)}")
     print(f"[EMAIL_GENERATOR] df_open['Opportunity id'] unique count: {df_open['Opportunity id'].nunique()}")
+
+    # CRITICAL: Log comparison parameters
+    print("\n" + "📊" * 60)
+    print("[EMAIL_GENERATOR] *** COMPARISON PARAMETERS CHECK ***")
+    print(f"[EMAIL_GENERATOR] previous_stats provided: {previous_stats is not None}")
+    if previous_stats:
+        print(f"[EMAIL_GENERATOR] previous_stats type: {type(previous_stats)}")
+        print(f"[EMAIL_GENERATOR] previous_stats keys: {list(previous_stats.keys()) if isinstance(previous_stats, dict) else 'NOT A DICT'}")
+        print(f"[EMAIL_GENERATOR] previous_stats: {previous_stats}")
+
+    print(f"\n[EMAIL_GENERATOR] comparison_data provided: {comparison_data is not None}")
+    if comparison_data:
+        print(f"[EMAIL_GENERATOR] comparison_data type: {type(comparison_data)}")
+        print(f"[EMAIL_GENERATOR] comparison_data keys: {list(comparison_data.keys()) if isinstance(comparison_data, dict) else 'NOT A DICT'}")
+        if isinstance(comparison_data, dict):
+            print(f"[EMAIL_GENERATOR] new_ops count: {len(comparison_data.get('new_ops', []))}")
+            print(f"[EMAIL_GENERATOR] closed_ops count: {len(comparison_data.get('closed_ops', []))}")
+            print(f"[EMAIL_GENERATOR] status_changes count: {len(comparison_data.get('status_changes', []))}")
+    print("📊" * 60 + "\n")
+
     print("🔥" * 60 + "\n")
 
     html = """<!DOCTYPE html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validation Errors - ACE Report Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .error-summary {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .error-summary h2 {
+            margin-top: 0;
+            color: #856404;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #dc3545;
+        }
+
+        .stat-box.warning {
+            border-left-color: #ffc107;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .error-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .error-table th {
+            background: #dc3545;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .error-table.warning th {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .error-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .error-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .severity-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .severity-ERROR {
+            background: #dc3545;
+            color: white;
+        }
+
+        .severity-WARNING {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .severity-INFO {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .row-num {
+            color: #666;
+            font-family: monospace;
+        }
+
+        .section-header {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            border-radius: 4px;
+        }
+
+        .section-header h3 {
+            margin: 0;
+            color: #007bff;
+        }
+
+        .no-errors {
+            text-align: center;
+            padding: 40px;
+            color: #28a745;
+            font-size: 1.2em;
+        }
+
+        .no-errors i {
+            font-size: 3em;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .back-link:hover {
+            background: #0056b3;
+        }
+
+        .aggregate-error {
+            background: #ffe5e5;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Validation Errors</h1>
+            <p><a href="/" class="back-link">← Back to Dashboard</a></p>
+        </header>
+
+        <div class="error-summary">
+            <h2>Validation Summary</h2>
+            <div class="summary-stats">
+                <div class="stat-box">
+                    <div class="stat-label">Critical Errors</div>
+                    <div class="stat-value">{{ validation_results.error_count }}</div>
+                </div>
+                <div class="stat-box warning">
+                    <div class="stat-label">Warnings</div>
+                    <div class="stat-value">{{ validation_results.warning_count }}</div>
+                </div>
+            </div>
+        </div>
+
+        {% if validation_results.error_count == 0 and validation_results.warning_count == 0 %}
+        <div class="no-errors">
+            <i>✓</i>
+            <p>No validation errors or warnings found!</p>
+            <p>All data passed validation checks.</p>
+        </div>
+        {% else %}
+
+        {% if validation_results.errors|length > 0 %}
+        <div class="section-header">
+            <h3>Critical Errors ({{ validation_results.error_count }})</h3>
+            <p style="margin: 5px 0 0 0; color: #666;">These errors must be fixed before the report can be processed.</p>
+        </div>
+
+        <table class="error-table">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">Row</th>
+                    <th style="width: 120px;">Severity</th>
+                    <th style="width: 200px;">Rule</th>
+                    <th>Error Message</th>
+                    <th style="width: 150px;">Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for error in validation_results.errors %}
+                <tr {% if error.row_number == -1 %}class="aggregate-error"{% endif %}>
+                    <td class="row-num">
+                        {% if error.row_number == -1 %}
+                        ALL
+                        {% else %}
+                        #{{ error.row_number }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="severity-badge severity-{{ error.severity }}">{{ error.severity }}</span>
+                    </td>
+                    <td><code>{{ error.rule_name }}</code></td>
+                    <td>{{ error.message }}</td>
+                    <td>
+                        {% if error.actual_value is not none %}
+                        <code>{{ error.actual_value }}</code>
+                        {% else %}
+                        <em>empty</em>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if validation_results.error_count > 20 %}
+        <div style="margin-top: 15px; padding: 15px; background: #fff3cd; border-radius: 5px; color: #856404;">
+            Showing first 20 errors only. There are {{ validation_results.error_count - 20 }} more errors not displayed.
+        </div>
+        {% endif %}
+        {% endif %}
+
+        {% if validation_results.warnings|length > 0 %}
+        <div class="section-header" style="border-left-color: #ffc107;">
+            <h3 style="color: #856404;">Warnings ({{ validation_results.warning_count }})</h3>
+            <p style="margin: 5px 0 0 0; color: #666;">These warnings indicate potential data quality issues.</p>
+        </div>
+
+        <table class="error-table warning">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">Row</th>
+                    <th style="width: 120px;">Severity</th>
+                    <th style="width: 200px;">Rule</th>
+                    <th>Warning Message</th>
+                    <th style="width: 150px;">Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for warning in validation_results.warnings %}
+                <tr {% if warning.row_number == -1 %}class="aggregate-error"{% endif %}>
+                    <td class="row-num">
+                        {% if warning.row_number == -1 %}
+                        ALL
+                        {% else %}
+                        #{{ warning.row_number }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="severity-badge severity-{{ warning.severity }}">{{ warning.severity }}</span>
+                    </td>
+                    <td><code>{{ warning.rule_name }}</code></td>
+                    <td>{{ warning.message }}</td>
+                    <td>
+                        {% if warning.actual_value is not none %}
+                        <code>{{ warning.actual_value }}</code>
+                        {% else %}
+                        <em>empty</em>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if validation_results.warning_count > 20 %}
+        <div style="margin-top: 15px; padding: 15px; background: #fff3cd; border-radius: 5px; color: #856404;">
+            Showing first 20 warnings only. There are {{ validation_results.warning_count - 20 }} more warnings not displayed.
+        </div>
+        {% endif %}
+        {% endif %}
+
+        {% endif %}
+
+        <div style="margin: 30px 0;">
+            <a href="/" class="back-link">← Back to Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>

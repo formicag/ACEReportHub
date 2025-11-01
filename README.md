@@ -1,176 +1,235 @@
 # ACE Report Hub
 
-**Modern Flask web app for AWS Partner Central ACE weekly hygiene reports**
+**Automated weekly ACE hygiene reporting system for AWS Partner Central**
+
+A Flask-based web application that processes AWS Partner Central ACE (Account Coverage Engine) export files, tracks opportunity hygiene metrics, and generates automated weekly email reports with AI-powered summaries.
+
+---
 
 ## Features
 
-- 📥 **Baseline Import** - One-time setup with your first ACE export
-- 📊 **Weekly Reports** - Compare week-over-week changes automatically
-- 📈 **Trend Tracking** - See improvements/declines in opportunity hygiene
-- ✨ **Change Detection** - Automatically identifies new, closed, launched ops
-- 📧 **Email Automation** - Generate and send HTML emails with one click
-- 🧪 **Test Emails** - Test before sending to everyone
-- 📜 **History** - View all past reports and trends
-- 🔒 **Excluded Ops** - Track legacy ops separately (not included in reports)
+### Core Functionality
+- **Baseline Import**: Import your first ACE export to establish a baseline
+- **Weekly Processing**: Upload weekly ACE exports to track changes
+- **Comparison Engine**: Automatically compare current week vs baseline to identify:
+  - New opportunities
+  - Closed opportunities
+  - Status changes
+- **Stale Opportunity Detection**: Flag opportunities with no updates in 30+ days
+- **Email Automation**: Generate and send HTML email reports via SMTP
 
-## Setup
+### AI-Powered Insights
+- **AWS Bedrock Integration**: AI-generated executive summaries using Claude
+- **Automated Analysis**: Key insights, trends, and recommendations
+- **Context-Aware**: Includes Well-Architected and RAPID PILOT opportunity tracking
 
-### 1. Activate Virtual Environment
+### Data Management
+- **SQLite Database**: Local data storage with full history
+- **Snapshot System**: Weekly snapshots for historical tracking
+- **Audit Logging**: Comprehensive audit trail for all actions
+- **Data Lineage**: Track source files and transformations
 
-```bash
-cd /Users/gianlucaformica/Projects/ACEReportHub
-source venv/bin/activate
-```
+### Advanced Features
+- **Validation System**: Configurable data validation rules (currently disabled)
+- **Email Distribution Management**: Web-based recipient list management
+- **Duplicate Detection**: Prevents saving duplicate weekly reports
+- **Legacy Opportunity Exclusion**: 13 legacy opportunities automatically excluded from reports
 
-### 2. Install Dependencies (if needed)
+---
 
-```bash
-pip install -r requirements.txt
-```
+## Technology Stack
 
-### 3. Start the Server
+- **Backend**: Python 3.x, Flask
+- **Database**: SQLite3
+- **Excel Processing**: pandas, openpyxl
+- **AI**: AWS Bedrock (Claude)
+- **Email**: SMTP with Gmail App Passwords
+- **Frontend**: HTML, CSS, JavaScript (vanilla)
 
-```bash
-python app.py
-```
+---
 
-### 4. Open in Browser
+## Installation
 
-Navigate to: **http://localhost:5000**
+### Prerequisites
+- Python 3.8+
+- AWS Account with Bedrock access (for AI summaries)
+- Gmail account with App Password (for email sending)
 
-## First Time Use
+### Setup
 
-### Import Baseline
+1. **Clone the repository**
+   \`\`\`bash
+   git clone <repository-url>
+   cd ACEReportHub
+   \`\`\`
 
-1. Click "Choose Baseline File"
-2. Select your first ACE export (e.g., `Export (9).xlsx`)
-3. Click "Import Baseline"
-4. Wait for processing
+2. **Create virtual environment**
+   \`\`\`bash
+   python3 -m venv venv
+   source venv/bin/activate  # On macOS/Linux
+   # or
+   venv\Scripts\activate  # On Windows
+   \`\`\`
 
-This creates your first snapshot in the database.
+3. **Install dependencies**
+   \`\`\`bash
+   pip install -r requirements.txt
+   \`\`\`
 
-## Weekly Workflow
+4. **Configure AWS Credentials**
+   - Set up AWS CLI with credentials that have Bedrock access
+   - Ensure the \`us-east-1\` region is configured
 
-### Every Friday:
+5. **Configure Email**
+   - Edit \`email_config.py\` to set your email addresses
+   - Generate a Gmail App Password: https://myaccount.google.com/apppasswords
 
-1. Export latest ACE report from Partner Central
-2. Save to `ACE-Reports/` folder
-3. Open **http://localhost:5000**
-4. Click "Choose ACE Export File"
-5. Select this week's file
-6. Click "Generate Report"
-7. Review the summary (shows changes vs last week)
-8. Click "Preview Email"
-9. Enter your **App Password** (Google Workspace)
-10. Click "Send Test Email" to test
-11. If looks good, click "Send to All Recipients"
+6. **Run the application**
+   \`\`\`bash
+   python app.py
+   \`\`\`
 
-The app will:
-- Send email to all stakeholders
-- Save snapshot to database
-- This becomes the baseline for next week
+7. **Open in browser**
+   \`\`\`
+   http://localhost:5001
+   \`\`\`
 
-## Database
+---
 
-- **Location:** `ace_reports.db` (SQLite)
-- **Tables:**
-  - `weekly_snapshots` - Metadata for each sent report
-  - `opportunities` - Full snapshot of all ops at each send
-- **Automatic:** Created on first run
+## Usage
 
-## Configuration
+### First Time Setup
 
-### Email Settings
+1. **Import Baseline**
+   - Navigate to the dashboard
+   - Click "Choose Baseline File"
+   - Select your ACE export (.xlsx file)
+   - Enter the report week date (the Monday of that week)
+   - Click "Import Baseline"
 
-Edit `email_config.py`:
+### Weekly Workflow
 
-```python
-EMAIL_CONFIG = {
-    'to': [...],  # Primary recipients
-    'cc': [...],  # CC recipients
-    'subject': 'ACE Hygiene',
-    'from_email': 'your.email@domain.com'
-}
+1. **Upload Weekly Report**
+   - Export ACE report from AWS Partner Central
+   - Upload via "Generate Weekly Report" section
+   - Enter the report week date
 
-SMTP_CONFIG = {
-    'server': 'smtp.gmail.com',  # Gmail/Google Workspace
-    'port': 587,
-    'username': 'your.email@domain.com'
-}
-```
+2. **Preview Email**
+   - Review the generated email with:
+     - AI summary
+     - Stale opportunities list
+     - Comparison with baseline (new/closed/changed)
+     - Key metrics
 
-### Excluded Opportunities
+3. **Save Report** (Optional)
+   - Save snapshot to database for historical tracking
+   - Prevents duplicate saves for the same week
 
-Edit `ace_database.py` to modify `EXCLUDED_OPS` list:
+4. **Send Email**
+   - Enter your Gmail App Password
+   - Click "Send to All Recipients"
+   - Or use "Send Test Email" to send to yourself first
 
-```python
-EXCLUDED_OPS = [
-    'O18244',
-    'O38038',
-    # ... add more
-]
-```
-
-These ops are:
-- Tracked in database
-- **Not** included in email reports
-- Still counted in total stats
-
-## Stopping the Server
-
-Press `CTRL+C` in the terminal where the server is running.
-
-## Troubleshooting
-
-### "No module named 'flask'"
-
-```bash
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
-### Email Authentication Failed
-
-- Use **App Password**, not regular password
-- Create at: https://myaccount.google.com/apppasswords
-
-### Port Already in Use
-
-Change port in `app.py`:
-
-```python
-app.run(debug=True, port=5001)  # Use 5001 instead
-```
+---
 
 ## File Structure
 
-```
+\`\`\`
 ACEReportHub/
-├── app.py                    # Main Flask application
-├── ace_database.py          # Database operations
-├── ace_processor.py         # ACE file processing
-├── email_generator.py       # Email generation & sending
-├── email_config.py          # Email configuration
-├── templates/               # HTML templates
-│   ├── index.html
-│   ├── email_preview.html
-│   └── history.html
+├── app.py                      # Main Flask application
+├── ace_database.py             # Database management and queries
+├── ace_processor.py            # ACE file processing logic
+├── email_generator.py          # Email HTML generation
+├── email_config.py             # Email distribution lists
+├── bedrock_service.py          # AWS Bedrock AI integration
+├── audit_logger.py             # Comprehensive audit logging
+├── validation_rules.py         # Data validation engine (disabled)
+├── templates/
+│   ├── index.html              # Main dashboard
+│   ├── email_preview.html      # Email preview page
+│   ├── history.html            # Snapshot history viewer
+│   └── validation_errors.html  # Validation error viewer
 ├── static/
-│   └── style.css            # Modern UI styles
-├── ACE-Reports/             # Input files go here
-├── ace_reports.db           # SQLite database
-├── venv/                    # Virtual environment
-└── requirements.txt         # Python dependencies
-```
+│   └── style.css               # Application styles
+├── ACE-Reports/                # Uploaded ACE files
+├── temp_emails/                # Generated email HTML files
+├── ace_reports.db              # SQLite database
+└── requirements.txt            # Python dependencies
+\`\`\`
+
+---
+
+## Configuration
+
+### Email Distribution (\`email_config.py\`)
+
+\`\`\`python
+EMAIL_CONFIG = {
+    'to': [
+        'recipient1@example.com',
+        'recipient2@example.com',
+    ],
+    'cc': [
+        'cc@example.com',
+    ],
+    'from_email': 'sender@example.com',
+    'from_name': 'ACE Report Bot'
+}
+\`\`\`
+
+### Excluded Opportunities (\`ace_database.py\`)
+
+13 legacy opportunities are automatically excluded from reports. Edit \`EXCLUDED_OPS\` list to modify.
+
+### Stale Threshold (\`email_config.py\`)
+
+Default: 30 days. Opportunities with no update for 30+ days are flagged as stale.
+
+---
+
+## Database Schema
+
+### Main Tables
+- **snapshots**: Weekly snapshot metadata
+- **opportunities**: Individual opportunity records
+- **snapshot_opportunities**: Links opportunities to snapshots
+- **audit_log**: Comprehensive event logging
+- **data_lineage**: Source file tracking
+- **validation_rules**: Configurable validation rules
+- **validation_results**: Validation execution results
+
+---
+
+## Security Notes
+
+- Never commit \`email_config.py\` with real email addresses to public repos
+- Gmail App Passwords should be stored securely (use environment variables in production)
+- AWS credentials should follow least-privilege principle
+- Database contains sensitive business data - secure accordingly
+
+---
+
+## Known Issues & TODOs
+
+- Validation system currently disabled (needs context-aware rules)
+- No authentication/authorization (single-user system)
+- Email templates are not customizable via UI
+- No export functionality for historical data
+
+---
+
+## License
+
+Internal tool - Not licensed for external use
+
+---
+
+## Author
+
+Built with Claude Code by Anthropic
+
+---
 
 ## Support
 
-For issues:
-1. Check console output where Flask is running
-2. Check browser console (F12) for JavaScript errors
-3. Verify email settings in `email_config.py`
-4. Ensure ACE export files are in correct format
-
-## Version
-
-**v1.0** - Initial Flask release
+For issues or questions, please create a GitHub issue or contact the development team.

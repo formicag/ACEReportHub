@@ -15,6 +15,7 @@ EMAIL_CONFIG = {
         'steven.sell@colibridigital.io',
         'lydia.cartwright@colibridigital.io',
         'jason.oliver@colibridigital.io',
+        'gianluca.formica@colibridigital.io',
     ],
     'cc': [
         'adam.dunn@colibridigital.io',

@@ -71,7 +71,8 @@ class ACEDatabase:
                 stage_changed_count INTEGER,
                 consecutive_weeks_no_stale INTEGER DEFAULT 0,
                 email_sent_to TEXT,
-                notes TEXT
+                notes TEXT,
+                report_week_date TEXT
             )
             ''')
 
@@ -94,6 +95,99 @@ class ACEDatabase:
                     is_excluded BOOLEAN DEFAULT 0,
                     created_by TEXT,
                     aws_account_id TEXT,
+                    FOREIGN KEY (snapshot_id) REFERENCES weekly_snapshots(snapshot_id)
+                )
+            ''')
+
+            # Table 3: TEMPORARY SNAPSHOTS - Draft/Preview before email sent
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS temporary_snapshots (
+                    temp_snapshot_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    created_at TEXT NOT NULL,
+                    report_week_date TEXT NOT NULL,
+                    ace_export_filename TEXT NOT NULL,
+                    ace_file_path TEXT NOT NULL,
+                    total_all_ops INTEGER,
+                    total_open_ops INTEGER,
+                    total_reportable_ops INTEGER,
+                    total_excluded_ops INTEGER,
+                    avg_days_since_update REAL,
+                    stale_ops_count INTEGER,
+                    total_arr REAL,
+                    well_architected_count INTEGER DEFAULT 0,
+                    rapid_pilot_count INTEGER DEFAULT 0,
+                    status TEXT DEFAULT 'DRAFT',
+                    promoted_to_snapshot_id INTEGER,
+                    session_id TEXT,
+                    FOREIGN KEY (promoted_to_snapshot_id) REFERENCES weekly_snapshots(snapshot_id)
+                )
+            ''')
+
+            # Table 4: AUDIT LOG - Everything that happens
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS audit_log (
+                    audit_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    timestamp TEXT NOT NULL,
+                    event_type TEXT NOT NULL,
+                    event_subtype TEXT,
+                    snapshot_id INTEGER,
+                    temp_snapshot_id INTEGER,
+                    user_action TEXT,
+                    source_file TEXT,
+                    target_file TEXT,
+                    report_week_date TEXT,
+                    comparison_baseline_id INTEGER,
+                    comparison_date_from TEXT,
+                    comparison_date_to TEXT,
+                    ops_count_before INTEGER,
+                    ops_count_after INTEGER,
+                    new_ops_count INTEGER,
+                    closed_ops_count INTEGER,
+                    status_changes_count INTEGER,
+                    success BOOLEAN,
+                    error_message TEXT,
+                    metadata_json TEXT,
+                    FOREIGN KEY (snapshot_id) REFERENCES weekly_snapshots(snapshot_id),
+                    FOREIGN KEY (temp_snapshot_id) REFERENCES temporary_snapshots(temp_snapshot_id)
+                )
+            ''')
+
+            # Table 5: DATA LINEAGE - Where did every piece of data come from?
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS data_lineage (
+                    lineage_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    created_at TEXT NOT NULL,
+                    data_type TEXT NOT NULL,
+                    snapshot_id INTEGER,
+                    temp_snapshot_id INTEGER,
+                    source_system TEXT NOT NULL,
+                    source_file_path TEXT NOT NULL,
+                    source_file_hash TEXT,
+                    source_file_size INTEGER,
+                    source_file_modified TEXT,
+                    excel_sheet_name TEXT,
+                    excel_row_count INTEGER,
+                    user_provided_date TEXT,
+                    system_detected_date TEXT,
+                    date_source TEXT,
+                    transformation_applied TEXT,
+                    parent_lineage_id INTEGER,
+                    metadata_json TEXT,
+                    FOREIGN KEY (snapshot_id) REFERENCES weekly_snapshots(snapshot_id),
+                    FOREIGN KEY (temp_snapshot_id) REFERENCES temporary_snapshots(temp_snapshot_id),
+                    FOREIGN KEY (parent_lineage_id) REFERENCES data_lineage(lineage_id)
+                )
+            ''')
+
+            # Table 6: SNAPSHOT METADATA - Extended info about each snapshot
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS snapshot_metadata (
+                    metadata_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    snapshot_id INTEGER NOT NULL,
+                    key TEXT NOT NULL,
+                    value TEXT,
+                    value_type TEXT,
+                    created_at TEXT NOT NULL,
                     FOREIGN KEY (snapshot_id) REFERENCES weekly_snapshots(snapshot_id)
                 )
             ''')
@@ -146,7 +240,7 @@ class ACEDatabase:
             conn.close()
 
     def save_snapshot(self, df_all, snapshot_date, ace_filename, ace_file_date,
-                     email_recipients=None, notes=None):
+                     email_recipients=None, notes=None, report_week_date=None):
         """
         Save a weekly snapshot to the database.
 
@@ -157,6 +251,7 @@ class ACEDatabase:
             ace_file_date: Date from the ACE export file
             email_recipients: List of email addresses sent to
             notes: Optional notes about this snapshot
+            report_week_date: Manual date for the report week (YYYY-MM-DD string)
 
         Returns:
             snapshot_id of the saved snapshot
@@ -228,8 +323,8 @@ class ACEDatabase:
                 avg_days_since_update, stale_ops_count, total_arr,
                 well_architected_count, rapid_pilot_count,
                 consecutive_weeks_no_stale,
-                email_sent_to, notes
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                email_sent_to, notes, report_week_date
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             snapshot_date.isoformat(),
             ace_filename,
@@ -245,7 +340,8 @@ class ACEDatabase:
             rapid_count,  # SAVE RAPID PILOT count
             consecutive_weeks_no_stale,
             json.dumps(email_recipients) if email_recipients else None,
-            notes
+            notes,
+            report_week_date  # Manual report week date (YYYY-MM-DD)
         ))
 
         snapshot_id = cursor.lastrowid
@@ -467,14 +563,17 @@ class ACEDatabase:
         return delta.days
 
     def get_all_snapshots(self):
-        """Get list of all snapshots."""
+        """Get list of all snapshots with ALL fields for display."""
         conn = self.connect()
         try:
             cursor = conn.cursor()
 
             cursor.execute('''
                 SELECT snapshot_id, snapshot_date, ace_export_filename,
-                       total_open_ops, total_reportable_ops, stale_ops_count
+                       total_open_ops, total_reportable_ops, stale_ops_count,
+                       avg_days_since_update, total_arr,
+                       well_architected_count, rapid_pilot_count,
+                       consecutive_weeks_no_stale, report_week_date
                 FROM weekly_snapshots
                 ORDER BY snapshot_id DESC
             ''')
@@ -493,5 +592,56 @@ class ACEDatabase:
             count = cursor.fetchone()[0]
 
             return count > 0
+        finally:
+            conn.close()
+
+    def find_snapshot_by_week(self, report_week_date):
+        """
+        Find if a snapshot already exists for the given report week date.
+
+        Args:
+            report_week_date: The report week date to check (string in YYYY-MM-DD format)
+
+        Returns:
+            dict with snapshot info if found, None otherwise
+        """
+        conn = self.connect()
+        try:
+            cursor = conn.cursor()
+
+            cursor.execute('''
+                SELECT snapshot_id, snapshot_date, ace_export_filename,
+                       total_open_ops, total_reportable_ops, stale_ops_count,
+                       report_week_date
+                FROM weekly_snapshots
+                WHERE report_week_date = ?
+            ''', (report_week_date,))
+
+            row = cursor.fetchone()
+            if row:
+                return dict(row)
+            return None
+        finally:
+            conn.close()
+
+    def delete_snapshot(self, snapshot_id):
+        """
+        Delete a snapshot and all its associated data.
+
+        Args:
+            snapshot_id: The ID of the snapshot to delete
+        """
+        conn = self.connect()
+        try:
+            cursor = conn.cursor()
+
+            # Delete from opportunity_snapshots table first (foreign key)
+            cursor.execute('DELETE FROM opportunity_snapshots WHERE snapshot_id = ?', (snapshot_id,))
+
+            # Delete from weekly_snapshots table
+            cursor.execute('DELETE FROM weekly_snapshots WHERE snapshot_id = ?', (snapshot_id,))
+
+            conn.commit()
+            print(f"[DB] Deleted snapshot {snapshot_id} and all associated opportunity records")
         finally:
             conn.close()

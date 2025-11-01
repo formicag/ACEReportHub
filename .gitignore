@@ -1,33 +1,32 @@
-# Python
+# Database files
+*.db
+*.db-journal
+
+# Virtual environment
+venv/
+env/
+
+# Python cache
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-.Python
-venv/
-env/
-ENV/
-.venv
 
-# Database
-*.db
-*.sqlite
-*.sqlite3
+# Temporary files
+temp_emails/
+
+# Uploaded files (may contain sensitive data)
+ACE-Reports/*.xlsx
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Logs
-*.log
-
-# Temporary files
-*.tmp
-.cache/
+# Email config (contains real email addresses)
+email_config.py

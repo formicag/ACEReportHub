@@ -1,0 +1,277 @@
+[DB] Database tables created/verified
+================================================================================
+ACE Report Hub - Starting...
+================================================================================
+Database: ✓ Has baseline
+Excluded ops: 8
+================================================================================
+
+Open your browser and navigate to:
+  → http://localhost:5001
+
+Press CTRL+C to stop the server
+================================================================================
+ * Serving Flask app 'app'
+ * Debug mode: on
+[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5001
+[33mPress CTRL+C to quit[0m
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 125-950-236
+127.0.0.1 - - [31/Oct/2025 20:36:49] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2025 20:36:49] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [31/Oct/2025 20:36:49] "GET /get_distribution_list HTTP/1.1" 200 -
+send: 'ehlo 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa\r\n'
+reply: b'250-smtp.gmail.com at your service, [2a00:23c5:db0e:be01:9973:f067:2914:ab70]\r\n'
+reply: b'250-SIZE 35882577\r\n'
+reply: b'250-8BITMIME\r\n'
+reply: b'250-STARTTLS\r\n'
+reply: b'250-ENHANCEDSTATUSCODES\r\n'
+reply: b'250-PIPELINING\r\n'
+reply: b'250-CHUNKING\r\n'
+reply: b'250 SMTPUTF8\r\n'
+reply: retcode (250); Msg: b'smtp.gmail.com at your service, [2a00:23c5:db0e:be01:9973:f067:2914:ab70]\nSIZE 35882577\n8BITMIME\nSTARTTLS\nENHANCEDSTATUSCODES\nPIPELINING\nCHUNKING\nSMTPUTF8'
+send: 'STARTTLS\r\n'
+reply: b'220 2.0.0 Ready to start TLS\r\n'
+reply: retcode (220); Msg: b'2.0.0 Ready to start TLS'
+send: 'ehlo 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa\r\n'
+reply: b'250-smtp.gmail.com at your service, [2a00:23c5:db0e:be01:9973:f067:2914:ab70]\r\n'
+reply: b'250-SIZE 35882577\r\n'
+reply: b'250-8BITMIME\r\n'
+reply: b'250-AUTH LOGIN PLAIN XOAUTH2 PLAIN-CLIENTTOKEN OAUTHBEARER XOAUTH\r\n'
+reply: b'250-ENHANCEDSTATUSCODES\r\n'
+reply: b'250-PIPELINING\r\n'
+reply: b'250-CHUNKING\r\n'
+reply: b'250 SMTPUTF8\r\n'
+reply: retcode (250); Msg: b'smtp.gmail.com at your service, [2a00:23c5:db0e:be01:9973:f067:2914:ab70]\nSIZE 35882577\n8BITMIME\nAUTH LOGIN PLAIN XOAUTH2 PLAIN-CLIENTTOKEN OAUTHBEARER XOAUTH\nENHANCEDSTATUSCODES\nPIPELINING\nCHUNKING\nSMTPUTF8'
+127.0.0.1 - - [31/Oct/2025 20:36:53] "[35m[1mPOST /send_basic_test_email HTTP/1.1[0m" 500 -
+127.0.0.1 - - [31/Oct/2025 20:37:00] "POST /upload_weekly HTTP/1.1" 200 -
+/Users/gianlucaformica/Projects/ACEReportHub/email_generator.py:198: UserWarning: Parsing dates in %d/%m/%Y format when dayfirst=False (the default) was specified. Pass `dayfirst=True` or specify a format to silence this warning.
+  date_created = pd.to_datetime(date_created, errors='coerce')
+/Users/gianlucaformica/Projects/ACEReportHub/email_generator.py:327: UserWarning: Parsing dates in %d/%m/%Y format when dayfirst=False (the default) was specified. Pass `dayfirst=True` or specify a format to silence this warning.
+  last_updated = pd.to_datetime(last_updated, errors='coerce')
+/Users/gianlucaformica/Projects/ACEReportHub/email_generator.py:400: UserWarning: Parsing dates in %d/%m/%Y format when dayfirst=False (the default) was specified. Pass `dayfirst=True` or specify a format to silence this warning.
+  last_updated = pd.to_datetime(last_updated, errors='coerce')
+/Users/gianlucaformica/Projects/ACEReportHub/email_generator.py:451: UserWarning: Parsing dates in %d/%m/%Y format when dayfirst=False (the default) was specified. Pass `dayfirst=True` or specify a format to silence this warning.
+  date_created = pd.to_datetime(date_created, errors='coerce')
+127.0.0.1 - - [31/Oct/2025 20:37:06] "GET /preview_email HTTP/1.1" 200 -
+127.0.0.1 - - [31/Oct/2025 20:37:06] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+20:37:09.446050 send: 'ehlo 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa\r\n'
+20:37:09.459572 reply: b'250-smtp.gmail.com at your service, [2a00:23c5:db0e:be01:9973:f067:2914:ab70]\r\n'
+20:37:09.459822 reply: b'250-SIZE 35882577\r\n'
+20:37:09.459886 reply: b'250-8BITMIME\r\n'
+20:37:09.459913 reply: b'250-STARTTLS\r\n'
+20:37:09.459932 reply: b'250-ENHANCEDSTATUSCODES\r\n'
+20:37:09.459949 reply: b'250-PIPELINING\r\n'
+20:37:09.459965 reply: b'250-CHUNKING\r\n'
+20:37:09.459978 reply: b'250 SMTPUTF8\r\n'
+20:37:09.460000 reply: retcode (250); Msg: b'smtp.gmail.com at your service, [2a00:23c5:db0e:be01:9973:f067:2914:ab70]\nSIZE 35882577\n8BITMIME\nSTARTTLS\nENHANCEDSTATUSCODES\nPIPELINING\nCHUNKING\nSMTPUTF8'
+20:37:09.460096 send: 'STARTTLS\r\n'
+20:37:09.473025 reply: b'220 2.0.0 Ready to start TLS\r\n'
+20:37:09.473166 reply: retcode (220); Msg: b'2.0.0 Ready to start TLS'
+[DB] Database tables created/verified
+================================================================================
+ACE Report Hub - Starting...
+================================================================================
+Database: ✓ Has baseline
+Excluded ops: 8
+================================================================================
+
+Open your browser and navigate to:
+  → http://localhost:5001
+
+Press CTRL+C to stop the server
+================================================================================
+[BASIC TEST EMAIL] Starting...
+[BASIC TEST EMAIL] Password length: 19 chars
+[BASIC TEST EMAIL] Password preview: uccw...vzeq
+[BASIC TEST EMAIL] Email: gianluca.formica@colibridigital.io
+[BASIC TEST EMAIL] Creating message with UTF-8 encoding...
+[BASIC TEST EMAIL] Message created: From=gianluca.formica@colibridigital.io, To=gianluca.formica@colibridigital.io, Subject=TEST
+[BASIC TEST EMAIL] Connecting to Gmail SMTP...
+[BASIC TEST EMAIL] Connected, starting TLS...
+[BASIC TEST EMAIL] TLS started
+[BASIC TEST EMAIL] Logging in as gianluca.formica@colibridigital.io...
+[BASIC TEST EMAIL] ERROR: UnicodeEncodeError: 'ascii' codec can't encode character '\xa0' in position 40: ordinal not in range(128)
+
+================================================================================
+[UPLOAD_WEEKLY] STARTING
+================================================================================
+[UPLOAD_WEEKLY] File received: Export (11).xlsx
+[UPLOAD_WEEKLY] Saving file to: ACE-Reports/Export_11.xlsx
+[UPLOAD_WEEKLY] File saved successfully
+[UPLOAD_WEEKLY] Step 1: Processing ACE file...
+[PROCESSOR] Reading file: ACE-Reports/Export_11.xlsx
+[PROCESSOR] Total ops in file: 968
+[PROCESSOR] Open ops (for reporting): 59 opportunities
+[PROCESSOR] Processing complete:
+[PROCESSOR]   - Total ALL ops: 968
+[PROCESSOR]   - Total open ops: 59
+[PROCESSOR]   - Total ARR: $136,536.00
+[PROCESSOR]   - Avg days since update: 18.3
+[PROCESSOR]   - Stale ops (30+ days): 3
+[UPLOAD_WEEKLY] Step 1 DONE: Processed 968 total ops
+[UPLOAD_WEEKLY] Open ops: 59, Stats: {'total_all_ops': 968, 'total_open': 59, 'avg_days_since_update': np.float64(18.3), 'stale_count': 3, 'total_arr': np.float64(136536.0), 'file_name': 'Export_11.xlsx', 'file_date': datetime.datetime(2025, 10, 31, 20, 36, 59, 793139), 'processed_date': datetime.datetime(2025, 10, 31, 20, 36, 59, 998675)}
+[UPLOAD_WEEKLY] Step 2: Getting stale ops (threshold: 30 days)...
+[PROCESSOR] Found 3 stale opportunities (>30 days)
+[UPLOAD_WEEKLY] Step 2 DONE: Found 3 stale ops
+[UPLOAD_WEEKLY] Step 3: Filtering excluded ops (8 excluded)...
+[UPLOAD_WEEKLY] Step 3 DONE: Reportable: 58, Stale reportable: 2
+[UPLOAD_WEEKLY] Step 4: Getting last snapshot for comparison...
+[UPLOAD_WEEKLY] Last snapshot exists: True
+[UPLOAD_WEEKLY] Step 5: Comparing with last snapshot...
+[DB] Retrieved 952 opportunities from snapshot 1
+[DB] Comparison: 16 new OPEN ops, 16 no longer open, 17 status changes
+[UPLOAD_WEEKLY] Step 5 DONE: New: 16, Closed: 16
+[UPLOAD_WEEKLY] Step 6: Calculating consecutive weeks...
+[UPLOAD_WEEKLY] Step 6 DONE: Consecutive weeks with no stale: 0
+[UPLOAD_WEEKLY] Step 7: Storing in session...
+[UPLOAD_WEEKLY] Step 7 DONE: Session updated
+[UPLOAD_WEEKLY] ✅ SUCCESS - Returning response
+================================================================================
+
+
+================================================================================
+[PREVIEW_EMAIL] STARTING
+================================================================================
+[PREVIEW_EMAIL] Current file: ACE-Reports/Export_11.xlsx
+[PREVIEW_EMAIL] Step 1: Processing ACE file...
+[PROCESSOR] Reading file: ACE-Reports/Export_11.xlsx
+[PROCESSOR] Total ops in file: 968
+[PROCESSOR] Open ops (for reporting): 59 opportunities
+[PROCESSOR] Processing complete:
+[PROCESSOR]   - Total ALL ops: 968
+[PROCESSOR]   - Total open ops: 59
+[PROCESSOR]   - Total ARR: $136,536.00
+[PROCESSOR]   - Avg days since update: 18.3
+[PROCESSOR]   - Stale ops (30+ days): 3
+[PREVIEW_EMAIL] Step 1 DONE: Got 968 total ops
+[PREVIEW_EMAIL] Step 2: Getting stale opportunities from 59 open ops...
+[PROCESSOR] Found 3 stale opportunities (>30 days)
+[PREVIEW_EMAIL] Step 2 DONE: Found 3 stale ops
+[PREVIEW_EMAIL] Step 3: Getting comparison data...
+[PREVIEW_EMAIL] Step 3: Last snapshot exists: True
+[PREVIEW_EMAIL] Step 4: Comparing snapshots...
+[DB] Retrieved 952 opportunities from snapshot 1
+[DB] Comparison: 16 new OPEN ops, 16 no longer open, 17 status changes
+[PREVIEW_EMAIL] Step 4 DONE: Comparison complete
+[PREVIEW_EMAIL] Step 5: Preparing stats...
+[PREVIEW_EMAIL] Step 5: Stats type check - processed_date is <class 'str'>
+[PREVIEW_EMAIL] Step 5: Converting processed_date from string to datetime
+[PREVIEW_EMAIL] Step 5 DONE: Stats ready
+[PREVIEW_EMAIL] Step 6: Generating email HTML...
+[BEDROCK] Calling Bedrock API...
+[BEDROCK] Successfully generated intro message (308 chars)
+[PREVIEW_EMAIL] Step 6 DONE: Generated 45082 bytes of HTML
+[PREVIEW_EMAIL] Step 7: Saving HTML to file...
+[PREVIEW_EMAIL] Step 7: Writing to temp_emails/email_20251031_203706.html
+[PREVIEW_EMAIL] Step 7: File written successfully
+[PREVIEW_EMAIL] Step 7 DONE: Saved to session as 'email_20251031_203706.html'
+[PREVIEW_EMAIL] Step 8: Rendering template...
+[PREVIEW_EMAIL] Step 8: Stale count (excluding excluded ops): 2
+[PREVIEW_EMAIL] Step 8 DONE: Template rendered
+[PREVIEW_EMAIL] ✅ SUCCESS - Preview complete
+================================================================================
+
+
+================================================================================
+[SEND_TEST_EMAIL] STARTING
+================================================================================
+[SEND_TEST_EMAIL] Route called
+[SEND_TEST_EMAIL] Request method: POST
+[SEND_TEST_EMAIL] Request content type: application/json
+[SEND_TEST_EMAIL] Got data: {'password': 'uccw\xa0mtbe\xa0fldl\xa0vzeq'}
+[SEND_TEST_EMAIL] Data type: <class 'dict'>
+[SEND_TEST_EMAIL] Password received: True
+[SEND_TEST_EMAIL] Password length: 19
+[SEND_TEST_EMAIL] Password first 4 chars: uccw
+[SEND_TEST_EMAIL] Checking session for email_html_file...
+[SEND_TEST_EMAIL] Session keys: ['current_file', 'current_filename', 'email_html_file', 'stats']
+[SEND_TEST_EMAIL] HTML filename from session: email_20251031_203706.html
+[SEND_TEST_EMAIL] Full HTML path: temp_emails/email_20251031_203706.html
+[SEND_TEST_EMAIL] File exists: True
+[SEND_TEST_EMAIL] Opening file for reading...
+[SEND_TEST_EMAIL] File read successfully - 45082 bytes
+[SEND_TEST_EMAIL] First 100 chars: <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font
+[SEND_TEST_EMAIL] Importing email modules...
+[SEND_TEST_EMAIL] Email modules imported
+[SEND_TEST_EMAIL] Creating MIMEMultipart message...
+[SEND_TEST_EMAIL] MIMEMultipart created
+[SEND_TEST_EMAIL] Subject set: ACE Hygiene - TEST
+[SEND_TEST_EMAIL] From set: Gianluca Formica <gianluca.formica@colibridigital.io>
+[SEND_TEST_EMAIL] To set: gianluca.formica@colibridigital.io
+[SEND_TEST_EMAIL] Creating HTML MIMEText part...
+[SEND_TEST_EMAIL] HTML MIMEText created
+[SEND_TEST_EMAIL] Attaching HTML to message...
+[SEND_TEST_EMAIL] HTML attached - total message size: 61395 bytes
+[SEND_TEST_EMAIL] Calling send_email function...
+
+================================================================================
+[SEND_EMAIL] STARTING
+================================================================================
+[SEND_EMAIL] SMTP username: gianluca.formica@colibridigital.io
+[SEND_EMAIL] SMTP server: smtp.gmail.com
+[SEND_EMAIL] SMTP port: 587
+[SEND_EMAIL] Use TLS: True
+[SEND_EMAIL] Password provided: True
+[SEND_EMAIL] Password length: 19
+[SEND_EMAIL] Message headers:
+[SEND_EMAIL]   Subject: ACE Hygiene - TEST
+[SEND_EMAIL]   From: Gianluca Formica <gianluca.formica@colibridigital.io>
+[SEND_EMAIL]   To: gianluca.formica@colibridigital.io
+[SEND_EMAIL]   Cc: N/A
+[SEND_EMAIL] Creating SMTP connection...
+[SEND_EMAIL] SMTP connection created successfully
+[SEND_EMAIL] Setting debug level to 2...
+[SEND_EMAIL] Debug level set
+[SEND_EMAIL] Starting TLS...
+[SEND_EMAIL] TLS started successfully
+[SEND_EMAIL] Attempting login with username: gianluca.formica@colibridigital.io20:37:09.490402 send: 'ehlo 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa\r\n'
+20:37:09.516455 reply: b'250-smtp.gmail.com at your service, [2a00:23c5:db0e:be01:9973:f067:2914:ab70]\r\n'
+20:37:09.516603 reply: b'250-SIZE 35882577\r\n'
+20:37:09.516658 reply: b'250-8BITMIME\r\n'
+20:37:09.516697 reply: b'250-AUTH LOGIN PLAIN XOAUTH2 PLAIN-CLIENTTOKEN OAUTHBEARER XOAUTH\r\n'
+20:37:09.516729 reply: b'250-ENHANCEDSTATUSCODES\r\n'
+20:37:09.516757 reply: b'250-PIPELINING\r\n'
+20:37:09.516784 reply: b'250-CHUNKING\r\n'
+20:37:09.516805 reply: b'250 SMTPUTF8\r\n'
+20:37:09.516834 reply: retcode (250); Msg: b'smtp.gmail.com at your service, [2a00:23c5:db0e:be01:9973:f067:2914:ab70]\nSIZE 35882577\n8BITMIME\nAUTH LOGIN PLAIN XOAUTH2 PLAIN-CLIENTTOKEN OAUTHBEARER XOAUTH\nENHANCEDSTATUSCODES\nPIPELINING\nCHUNKING\nSMTPUTF8'
+127.0.0.1 - - [31/Oct/2025 20:37:09] "POST /send_test_email HTTP/1.1" 200 -
+ * Detected change in '/Users/gianlucaformica/Projects/ACEReportHub/app.py', reloading
+
+[SEND_EMAIL] Password first 4 chars: uccw
+[SEND_EMAIL] ❌ GENERAL EXCEPTION: UnicodeEncodeError: 'ascii' codec can't encode character '\xa0' in position 40: ordinal not in range(128)
+[SEND_EMAIL] TRACEBACK:
+Traceback (most recent call last):
+  File "/Users/gianlucaformica/Projects/ACEReportHub/email_generator.py", line 811, in send_email
+    server.login(smtp_username, smtp_password)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/smtplib.py", line 739, in login
+    (code, resp) = self.auth(
+                   ~~~~~~~~~^
+        authmethod, getattr(self, method_name),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        initial_response_ok=initial_response_ok)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/smtplib.py", line 641, in auth
+    response = encode_base64(initial_response.encode('ascii'), eol='')
+                             ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+UnicodeEncodeError: 'ascii' codec can't encode character '\xa0' in position 40: ordinal not in range(128)
+
+================================================================================
+
+[SEND_TEST_EMAIL] send_email returned: success=False, message=Error sending email: 'ascii' codec can't encode character '\xa0' in position 40: ordinal not in range(128)
+[SEND_TEST_EMAIL] Creating response...
+[SEND_TEST_EMAIL] ✅ SUCCESS - Returning response
+================================================================================
+
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 125-950-236

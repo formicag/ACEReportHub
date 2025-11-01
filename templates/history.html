@@ -5,6 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Report History - ACE Report Hub</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .snapshot-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .snapshot-card {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .snapshot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+
+        .snapshot-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .snapshot-date {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .snapshot-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .stat-item {
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid #007bff;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .no-reports {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 1.1em;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -14,37 +83,84 @@
         </header>
 
         <div class="section">
-            <h2>All Sent Reports ({{ snapshots|length }})</h2>
+            <h2>All Snapshots ({{ snapshots|length }})</h2>
 
             {% if snapshots|length == 0 %}
-            <p>No reports sent yet.</p>
+            <div class="no-reports">
+                <p>No snapshots saved yet.</p>
+            </div>
             {% else %}
-            <table class="history-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Date Sent</th>
-                        <th>ACE File</th>
-                        <th>Total Ops</th>
-                        <th>Reportable</th>
-                        <th>Avg Days</th>
-                        <th>Stale Ops</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for snapshot in snapshots %}
-                    <tr>
-                        <td>{{ snapshot.snapshot_id }}</td>
-                        <td>{{ snapshot.snapshot_date[:10] }}</td>
-                        <td>{{ snapshot.ace_export_filename }}</td>
-                        <td>{{ snapshot.total_open_ops }}</td>
-                        <td>{{ snapshot.total_reportable_ops }}</td>
-                        <td>{{ "%.1f"|format(snapshot.avg_days_since_update) }}</td>
-                        <td>{{ snapshot.stale_ops_count }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="snapshot-list">
+                {% for snapshot in snapshots %}
+                <div class="snapshot-card">
+                    <div class="snapshot-header">
+                        <div class="snapshot-title">
+                            Snapshot #{{ snapshot.snapshot_id }}
+                            {% if snapshot.report_week_date %}
+                            - Week of {{ snapshot.report_week_date }}
+                            {% endif %}
+                        </div>
+                        <div class="snapshot-date">
+                            Saved: {{ snapshot.snapshot_date[:10] }}
+                        </div>
+                    </div>
+
+                    <div class="snapshot-stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Total Open Ops</div>
+                            <div class="stat-value">{{ snapshot.total_open_ops }}</div>
+                        </div>
+
+                        <div class="stat-item">
+                            <div class="stat-label">Reportable Ops</div>
+                            <div class="stat-value">{{ snapshot.total_reportable_ops }}</div>
+                        </div>
+
+                        <div class="stat-item">
+                            <div class="stat-label">Stale Ops (30+ days)</div>
+                            <div class="stat-value">{{ snapshot.stale_ops_count }}</div>
+                        </div>
+
+                        <div class="stat-item">
+                            <div class="stat-label">Avg Days Since Update</div>
+                            <div class="stat-value">{{ "%.1f"|format(snapshot.avg_days_since_update or 0) }} days</div>
+                        </div>
+
+                        {% if snapshot.total_arr %}
+                        <div class="stat-item">
+                            <div class="stat-label">Total ARR</div>
+                            <div class="stat-value">${{ "{:,.0f}".format(snapshot.total_arr) }}</div>
+                        </div>
+                        {% endif %}
+
+                        {% if snapshot.well_architected_count %}
+                        <div class="stat-item">
+                            <div class="stat-label">Well-Architected</div>
+                            <div class="stat-value">{{ snapshot.well_architected_count }}</div>
+                        </div>
+                        {% endif %}
+
+                        {% if snapshot.rapid_pilot_count %}
+                        <div class="stat-item">
+                            <div class="stat-label">RAPID PILOT</div>
+                            <div class="stat-value">{{ snapshot.rapid_pilot_count }}</div>
+                        </div>
+                        {% endif %}
+
+                        {% if snapshot.consecutive_weeks_no_stale %}
+                        <div class="stat-item">
+                            <div class="stat-label">Consecutive Weeks No Stale</div>
+                            <div class="stat-value">{{ snapshot.consecutive_weeks_no_stale }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #ddd; color: #666; font-size: 0.9em;">
+                        Source File: <strong>{{ snapshot.ace_export_filename }}</strong>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
             {% endif %}
         </div>
     </div>

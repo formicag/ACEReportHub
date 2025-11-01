@@ -43,6 +43,18 @@
                     Choose Baseline File
                 </button>
                 <p id="baselineFileName" class="file-name"></p>
+
+                <div style="margin-top: 20px;">
+                    <label for="baselineReportDate" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                        Report Week Date (REQUIRED):
+                    </label>
+                    <input type="date" id="baselineReportDate"
+                           style="padding: 10px; border: 2px solid #4a90e2; border-radius: 4px; font-size: 16px;"
+                           required>
+                    <p style="margin-top: 5px; color: #666; font-size: 14px;">
+                        Enter the Monday of the week this report represents (e.g., 2025-10-21)
+                    </p>
+                </div>
             </div>
 
             <button id="uploadBaselineBtn" class="btn btn-success" style="display: none;">
@@ -94,6 +106,18 @@
                     Choose ACE Export File
                 </button>
                 <p id="weeklyFileName" class="file-name"></p>
+
+                <div style="margin-top: 20px;">
+                    <label for="weeklyReportDate" style="display: block; margin-bottom: 5px; font-weight: bold;">
+                        Report Week Date (REQUIRED):
+                    </label>
+                    <input type="date" id="weeklyReportDate"
+                           style="padding: 10px; border: 2px solid #4a90e2; border-radius: 4px; font-size: 16px;"
+                           required>
+                    <p style="margin-top: 5px; color: #666; font-size: 14px;">
+                        Enter the Monday of the week this report represents (e.g., 2025-10-28)
+                    </p>
+                </div>
             </div>
 
             <button id="uploadWeeklyBtn" class="btn btn-success" style="display: none;">
@@ -106,11 +130,18 @@
                 <h3>Report Summary</h3>
                 <div id="summaryContent"></div>
 
-                <div class="action-buttons">
+                <div class="action-buttons" style="display: flex; gap: 15px; flex-wrap: wrap;">
                     <button onclick="previewEmail()" class="btn btn-secondary">
                         👁️ Preview Email
                     </button>
+                    <button onclick="saveReport()" class="btn btn-success" id="saveReportBtn">
+                        💾 Save Report (Do NOT Send)
+                    </button>
+                    <button onclick="sendEmail()" class="btn btn-warning" id="sendEmailBtn" style="display: none;">
+                        📧 Send Email to Recipients
+                    </button>
                 </div>
+                <div id="saveStatus" class="status-message" style="margin-top: 15px;"></div>
             </div>
         </div>
 
@@ -149,11 +180,14 @@
     <script>
         // BASIC EMAIL TEST
         async function sendBasicTestEmail() {
+            console.log('[BUTTON CLICK] 📧 Send Basic Test Email');
             const password = document.getElementById('testEmailPassword').value;
             if (!password) {
+                console.log('[BUTTON CLICK] ❌ No password entered - showing alert');
                 alert('Please enter your Gmail App Password');
                 return;
             }
+            console.log('[BUTTON CLICK] ✅ Password provided, sending test email');
 
             const statusEl = document.getElementById('testEmailStatus');
             statusEl.textContent = 'Sending basic test email...';
@@ -183,20 +217,36 @@
 
         // Baseline file upload
         document.getElementById('baselineFile')?.addEventListener('change', function(e) {
+            console.log('[FILE SELECT] 📁 Baseline file selected');
             const fileName = e.target.files[0]?.name;
             if (fileName) {
+                console.log('[FILE SELECT] ✅ File name:', fileName);
                 document.getElementById('baselineFileName').textContent = fileName;
                 document.getElementById('uploadBaselineBtn').style.display = 'block';
+                console.log('[FILE SELECT] Upload Baseline button now visible');
             }
         });
 
         document.getElementById('uploadBaselineBtn')?.addEventListener('click', async function() {
+            console.log('[BUTTON CLICK] 📤 Import Baseline');
             const fileInput = document.getElementById('baselineFile');
             const file = fileInput.files[0];
-            if (!file) return;
+            if (!file) {
+                console.log('[BUTTON CLICK] ❌ No file selected');
+                return;
+            }
+
+            const reportDate = document.getElementById('baselineReportDate').value;
+            if (!reportDate) {
+                console.log('[BUTTON CLICK] ❌ No report date entered - showing alert');
+                alert('Please enter the Report Week Date');
+                return;
+            }
+            console.log('[BUTTON CLICK] ✅ Uploading baseline with report date:', reportDate);
 
             const formData = new FormData();
             formData.append('file', file);
+            formData.append('report_week_date', reportDate);
 
             const statusEl = document.getElementById('baselineStatus');
             statusEl.textContent = 'Importing baseline...';
@@ -229,20 +279,36 @@
 
         // Weekly file upload
         document.getElementById('weeklyFile')?.addEventListener('change', function(e) {
+            console.log('[FILE SELECT] 📁 Weekly ACE Export file selected');
             const fileName = e.target.files[0]?.name;
             if (fileName) {
+                console.log('[FILE SELECT] ✅ File name:', fileName);
                 document.getElementById('weeklyFileName').textContent = fileName;
                 document.getElementById('uploadWeeklyBtn').style.display = 'block';
+                console.log('[FILE SELECT] Generate Report button now visible');
             }
         });
 
         document.getElementById('uploadWeeklyBtn')?.addEventListener('click', async function() {
+            console.log('[BUTTON CLICK] 📊 Generate Report');
             const fileInput = document.getElementById('weeklyFile');
             const file = fileInput.files[0];
-            if (!file) return;
+            if (!file) {
+                console.log('[BUTTON CLICK] ❌ No file selected');
+                return;
+            }
+
+            const reportDate = document.getElementById('weeklyReportDate').value;
+            if (!reportDate) {
+                console.log('[BUTTON CLICK] ❌ No report date entered - showing alert');
+                alert('Please enter the Report Week Date');
+                return;
+            }
+            console.log('[BUTTON CLICK] ✅ Generating report with date:', reportDate);
 
             const formData = new FormData();
             formData.append('file', file);
+            formData.append('report_week_date', reportDate);
 
             const statusEl = document.getElementById('weeklyStatus');
             statusEl.textContent = 'Processing report...';
@@ -286,7 +352,135 @@
         });
 
         function previewEmail() {
+            console.log('[BUTTON CLICK] 👁️ Preview Email');
             window.open('/preview_email', '_blank');
+        }
+
+        async function saveReport(forceReplace = false, oldSnapshotId = null) {
+            console.log('[BUTTON CLICK] 💾 Save Report', { forceReplace, oldSnapshotId });
+            const statusEl = document.getElementById('saveStatus');
+            statusEl.textContent = 'Saving report to database...';
+            statusEl.className = 'status-message info';
+
+            try {
+                let url = '/save_report';
+                let body = {};
+
+                // If user confirmed replacement, use the replace endpoint
+                if (forceReplace && oldSnapshotId) {
+                    url = '/save_report_replace';
+                    body = { old_snapshot_id: oldSnapshotId };
+                }
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body)
+                });
+
+                const data = await response.json();
+
+                // Handle duplicate detection (409 Conflict status)
+                if (response.status === 409 && data.duplicate) {
+                    const existingSnapshot = data.existing_snapshot;
+                    console.log('[SAVE_REPORT] 🚨 DUPLICATE DETECTED!');
+                    console.log('[SAVE_REPORT] Existing snapshot:', existingSnapshot);
+
+                    const warningMsg = `⚠️ DUPLICATE DETECTED!\n\nA report for this week already exists:\n` +
+                        `- Snapshot #${existingSnapshot.snapshot_id}\n` +
+                        `- Saved: ${existingSnapshot.snapshot_date.substring(0,10)}\n` +
+                        `- Total Open Ops: ${existingSnapshot.total_reportable_ops}\n\n` +
+                        `Do you want to REPLACE the old report with the new one?\n\n` +
+                        `⚠️ WARNING: The old report will be PERMANENTLY DELETED!`;
+
+                    const userConfirmed = confirm(warningMsg);
+                    console.log('[SAVE_REPORT] User decision:', userConfirmed ? 'CONFIRMED - Will replace' : 'CANCELLED - Will not save');
+
+                    if (userConfirmed) {
+                        // User confirmed - call saveReport again with replacement
+                        console.log('[SAVE_REPORT] ✅ User confirmed replacement - deleting old snapshot and saving new one');
+                        statusEl.textContent = '🔄 Replacing old report...';
+                        await saveReport(true, existingSnapshot.snapshot_id);
+                    } else {
+                        // User cancelled
+                        console.log('[SAVE_REPORT] ❌ User cancelled - save aborted, old snapshot remains');
+                        console.log('[SAVE_REPORT] Send Email button will remain HIDDEN');
+                        statusEl.textContent = '❌ Save cancelled - duplicate report exists';
+                        statusEl.className = 'status-message error';
+                    }
+                    return;
+                }
+
+                if (data.success) {
+                    let message = '✅ Report saved successfully!';
+                    if (forceReplace) {
+                        message = `✅ Report replaced successfully! Old snapshot #${data.replaced_snapshot_id} deleted.`;
+                    }
+                    message += ' You can now send the email if you wish.';
+
+                    statusEl.textContent = message;
+                    statusEl.className = 'status-message success';
+
+                    // Show the "Send Email" button
+                    document.getElementById('sendEmailBtn').style.display = 'inline-block';
+                    // Hide the "Save Report" button (already saved)
+                    document.getElementById('saveReportBtn').style.display = 'none';
+                } else {
+                    statusEl.textContent = '❌ Error: ' + data.error;
+                    statusEl.className = 'status-message error';
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ Error: ' + error.message;
+                statusEl.className = 'status-message error';
+            }
+        }
+
+        async function sendEmail() {
+            console.log('[BUTTON CLICK] 📧 Send Email to Recipients');
+            if (!confirm('Are you sure you want to send this email to all recipients? This action cannot be undone.')) {
+                console.log('[BUTTON CLICK] ❌ User cancelled send email confirmation');
+                return;
+            }
+            console.log('[BUTTON CLICK] ✅ User confirmed send email');
+
+            // Prompt for Gmail App Password
+            const password = prompt('Enter Gmail App Password to send email:');
+            if (!password) {
+                console.log('[BUTTON CLICK] ❌ No password entered - email cancelled');
+                alert('Email sending cancelled - password required');
+                return;
+            }
+            console.log('[BUTTON CLICK] ✅ Password entered - sending email');
+
+            const statusEl = document.getElementById('saveStatus');
+            statusEl.textContent = 'Sending email...';
+            statusEl.className = 'status-message info';
+
+            try {
+                const response = await fetch('/send_report_email', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    statusEl.textContent = '✅ ' + data.message;
+                    statusEl.className = 'status-message success';
+
+                    // Hide the send button after successful send
+                    document.getElementById('sendEmailBtn').style.display = 'none';
+                } else {
+                    statusEl.textContent = '❌ Error: ' + data.error;
+                    statusEl.className = 'status-message error';
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ Error: ' + error.message;
+                statusEl.className = 'status-message error';
+            }
         }
 
         // Distribution List Management
@@ -310,27 +504,34 @@
         }
 
         async function openDistributionModal() {
+            console.log('[BUTTON CLICK] 📧 Manage Recipients - opening modal');
             const data = await loadDistributionList();
             if (data && data.success) {
+                console.log('[BUTTON CLICK] ✅ Distribution list loaded successfully');
                 document.getElementById('toRecipients').value = data.to.join('\n');
                 document.getElementById('ccRecipients').value = data.cc.join('\n');
                 document.getElementById('distributionModal').style.display = 'flex';
+            } else {
+                console.log('[BUTTON CLICK] ❌ Failed to load distribution list');
             }
         }
 
         function closeDistributionModal() {
+            console.log('[BUTTON CLICK] ❌ Close Distribution Modal (Cancel)');
             document.getElementById('distributionModal').style.display = 'none';
             document.getElementById('distributionStatus').textContent = '';
             document.getElementById('distributionStatus').className = 'status-message';
         }
 
         async function saveDistributionList() {
+            console.log('[BUTTON CLICK] 💾 Save Distribution List (Save Changes)');
             const toText = document.getElementById('toRecipients').value;
             const ccText = document.getElementById('ccRecipients').value;
 
             // Parse emails - one per line, filter empty lines
             const toEmails = toText.split('\n').map(e => e.trim()).filter(e => e);
             const ccEmails = ccText.split('\n').map(e => e.trim()).filter(e => e);
+            console.log('[BUTTON CLICK] TO emails:', toEmails.length, 'CC emails:', ccEmails.length);
 
             const statusEl = document.getElementById('distributionStatus');
             statusEl.textContent = 'Saving...';
