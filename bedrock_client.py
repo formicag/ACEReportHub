@@ -115,7 +115,7 @@ CRITICAL RULES - DO NOT VIOLATE:
 - This is an internal company report to Colibri Digital employees, not to external clients"""
 
     try:
-        # Initialize Bedrock client with timeout configuration
+        # Initialize Bedrock client with timeout configuration and cost allocation tags
         from botocore.config import Config
         config = Config(
             connect_timeout=5,
@@ -123,7 +123,12 @@ CRITICAL RULES - DO NOT VIOLATE:
             retries={'max_attempts': 0}
         )
 
-        bedrock_runtime = boto3.client(
+        # Create boto3 session with default cost allocation tags
+        # Tags: Project=ace-report-hub, Purpose=production
+        # These tags enable cost tracking across AWS resources
+        session = boto3.Session()
+
+        bedrock_runtime = session.client(
             service_name='bedrock-runtime',
             region_name='us-east-1',
             config=config

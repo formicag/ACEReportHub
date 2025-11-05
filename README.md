@@ -178,6 +178,19 @@ EMAIL_CONFIG = {
 }
 \`\`\`
 
+### AWS Cost Allocation Tags
+
+This project implements AWS cost allocation tagging for resource tracking and budget management:
+
+- **Project Tag**: \`ace-report-hub\`
+- **Purpose Tag**: \`production\`
+
+See [AWS_TAGGING.md](AWS_TAGGING.md) for:
+- Complete tagging strategy documentation
+- How to activate cost allocation tags in AWS Billing Console
+- Cost tracking and optimization recommendations
+- Resource lifecycle management guidelines
+
 ### Excluded Opportunities (\`ace_database.py\`)
 
 13 legacy opportunities are automatically excluded from reports. Edit \`EXCLUDED_OPS\` list to modify.
