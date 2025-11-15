@@ -31,6 +31,9 @@ A Flask-based web application that processes AWS Partner Central ACE (Account Co
 
 ### Advanced Features
 - **Snapshot Dashboard**: Visual summary table of all imported ACE exports with key metrics
+- **Snapshot Management**: Delete unwanted snapshots with automatic backup protection
+- **Automatic Backups**: Database backup created before every snapshot deletion
+- **Baseline Protection**: Snapshot #1 (baseline) cannot be deleted to preserve comparison integrity
 - **Validation System**: Configurable data validation rules (currently disabled)
 - **Email Distribution Management**: Web-based recipient list management
 - **Duplicate Detection**: Prevents saving duplicate weekly reports
@@ -131,6 +134,29 @@ A Flask-based web application that processes AWS Partner Central ACE (Account Co
    - Click "Send to All Recipients"
    - Or use "Send Test Email" to send to yourself first
 
+### Managing Snapshots
+
+**View History**
+- Click "View All Snapshots" to see all saved snapshots
+- Each snapshot shows full metrics and source file information
+
+**Delete Snapshots**
+- Navigate to History page
+- Each snapshot has a delete button with safety features:
+  - **Snapshot #1 (Baseline)**: 🔒 Protected - Cannot be deleted (preserves comparison integrity)
+  - **Snapshot #2**: ⚠️ Extra confirmation required (type "DELETE" to confirm)
+  - **Snapshot #3+**: Standard confirmation dialog
+
+**Safety Features**
+- ✅ Automatic database backup before every deletion
+- ✅ Backup files saved to `database_backups/` folder with timestamp
+- ✅ Baseline snapshot (first import) is permanently protected
+- ✅ Restore functionality available if needed
+
+**Restore from Backup** (if needed)
+- Backups are saved in `database_backups/` folder
+- Use `restore_database()` method in Python or copy backup file manually
+
 ---
 
 ## File Structure
@@ -154,6 +180,7 @@ ACEReportHub/
 │   └── style.css               # Application styles
 ├── ACE-Reports/                # Uploaded ACE files
 ├── temp_emails/                # Generated email HTML files
+├── database_backups/           # Automatic database backups (created on delete)
 ├── ace_reports.db              # SQLite database
 └── requirements.txt            # Python dependencies
 \`\`\`
@@ -220,6 +247,26 @@ Default: 30 days. Opportunities with no update for 30+ days are flagged as stale
 - Gmail App Passwords should be stored securely (use environment variables in production)
 - AWS credentials should follow least-privilege principle
 - Database contains sensitive business data - secure accordingly
+
+---
+
+## Recent Updates
+
+### 2025-11-15
+- **Fixed**: Duplicate "Great news!" message in email preview (email_generator.py:760-761)
+- **Enhanced**: ARR analysis with $100k threshold for significant changes
+- **Enhanced**: AI intro now highlights top opportunities with customer, seller, and project details
+- **Enhanced**: Reserved professional tone in AI-generated messages
+- **Fixed**: Comparison logic now uses previous snapshot instead of always comparing to baseline
+- **Added**: Duplicate email protection - prevents sending reports for the same week twice
+- **Removed**: "Save Report (Do NOT Send)" button - workflow simplified to Upload → Preview → Send
+- **Removed**: "Please update these opportunities..." line from email body
+
+### 2025-11-14
+- **Added**: AWS Bedrock Claude integration for AI-generated email introductions
+- **Added**: ARR (Annual Recurring Revenue) analysis in weekly reports
+- **Added**: Consecutive weeks counter for zero stale opportunities tracking
+- **Enhanced**: Email templates with improved formatting and structure
 
 ---
 

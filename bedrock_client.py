@@ -28,6 +28,7 @@ def generate_intro_message(current_stats, previous_stats=None, comparison_data=N
     total_open = current_stats.get('total_reportable_ops', 0)
     wa_count = current_stats.get('well_architected_count', 0)
     rapid_count = current_stats.get('rapid_pilot_count', 0)
+    current_arr = current_stats.get('total_arr', 0)
 
     # ULTRA LOGGING - Print what we extracted from stats
     print("=" * 80)
@@ -42,19 +43,47 @@ def generate_intro_message(current_stats, previous_stats=None, comparison_data=N
 
     # Previous week data
     prev_stale_count = None
+    prev_arr = 0
+    arr_delta = 0
+    arr_pct_change = 0
+
     if previous_stats:
         prev_stale_count = previous_stats.get('stale_ops_count', 0)
+        prev_arr = previous_stats.get('total_arr', 0)
+        arr_delta = current_arr - prev_arr
+        if prev_arr > 0:
+            arr_pct_change = (arr_delta / prev_arr) * 100
 
     # Comparison data
     new_ops_count = 0
     launched_count = 0
     closed_lost_count = 0
+    top_new_opportunity = None
 
     if comparison_data:
         new_ops_count = len(comparison_data.get('new_ops', []))
         status_changes = comparison_data.get('status_changes', [])
         launched_count = len([c for c in status_changes if c.get('new_stage') == 'Launched'])
         closed_lost_count = len([c for c in status_changes if c.get('new_stage') == 'Closed Lost'])
+
+        # Find top new opportunity by ARR (if significant ARR increase)
+        new_ops_df = comparison_data.get('new_ops')
+        if new_ops_df is not None and len(new_ops_df) > 0 and arr_delta > 100000:  # $100k threshold
+            # Sort by estimated revenue descending
+            if 'Estimated AWS Monthly Recurring Revenue' in new_ops_df.columns:
+                new_ops_sorted = new_ops_df.sort_values(
+                    by='Estimated AWS Monthly Recurring Revenue',
+                    ascending=False
+                )
+                if len(new_ops_sorted) > 0:
+                    top_op = new_ops_sorted.iloc[0]
+                    top_new_opportunity = {
+                        'customer': top_op.get('Customer Company Name', 'Unknown'),
+                        'arr': top_op.get('Estimated AWS Monthly Recurring Revenue', 0),
+                        'seller': top_op.get('Created By', 'Unknown'),
+                        'title': top_op.get('Partner Project Title', ''),
+                        'problem': top_op.get('Customer Business Problem', '')[:100]  # First 100 chars
+                    }
 
     # Determine trend
     if prev_stale_count is not None:
@@ -73,11 +102,28 @@ Previous week stale opportunities: {prev_stale_count if prev_stale_count is not 
 Consecutive weeks with zero stale: {consecutive_weeks}
 Trend: {trend}
 Total open opportunities: {total_open}
+
+ARR Analysis:
+Current ARR: ${current_arr:,.0f}
+Previous ARR: ${prev_arr:,.0f}
+ARR change: ${arr_delta:,.0f} ({arr_pct_change:.1f}%)
+
 Well-Architected opportunities: {wa_count}
 RAPID PILOT opportunities: {rapid_count}
 New opportunities this week: {new_ops_count}
 Launched this week: {launched_count}
 Closed lost this week: {closed_lost_count}"""
+
+    # Add top opportunity details if significant ARR increase
+    if top_new_opportunity:
+        context += f"""
+
+Notable New Opportunity (driving ARR increase):
+- Customer: {top_new_opportunity['customer']}
+- ARR: ${top_new_opportunity['arr']:,.0f}
+- Seller: {top_new_opportunity['seller']}
+- Project: {top_new_opportunity['title']}
+- Context: {top_new_opportunity['problem']}"""
 
     # ULTRA LOGGING - Print the exact context being sent
     print("[BEDROCK ULTRA DEBUG] CONTEXT SENT TO BEDROCK:")
@@ -90,29 +136,36 @@ Closed lost this week: {closed_lost_count}"""
 {context}
 
 Write a SHORT 2-3 sentence message that:
-1. If stale ops = 0: Say "Well done! No stale opportunities this week - 100% success!" and mention consecutive weeks if applicable
-2. If stale ops > 0: State the exact number and say "need updating (detailed further down in the report) to reach 100% hygiene"
-3. If stale ops decreased or hit zero: Acknowledge the improvement with measured professional tone
-4. If consecutive weeks at zero (2+): Recognize the sustained improvement
-5. If stale ops increased: State the facts constructively
-6. ALWAYS mention Well-Architected count if > 0 (e.g., "including X Well-Architected opportunities")
-7. ALWAYS mention RAPID PILOT count if > 0 (e.g., "and X RAPID PILOT opportunities")
-8. Mention other key activity metrics (new ops, launched, closed) only if noteworthy
-9. TONE: Professional, factual, measured - avoid enthusiastic words like "excellent", "strong", "great"
-10. Use words like "good progress", "improvement", "trending positively/negatively"
-11. Keep it concise and data-focused
+1. PRIMARY FOCUS - Stale ops status:
+   - If stale ops = 0: "Well done! No stale opportunities this week - 100% success!"
+   - If stale ops > 0: State exact number factually
+   - If consecutive weeks at zero: "This marks our [X] consecutive week(s) at zero"
 
-CRITICAL RULES - DO NOT VIOLATE:
-- NEVER use "Hi All" or "Hello team" or any greeting
-- NEVER use "your pipeline" or "your" - say "the pipeline" or "our pipeline" or "we have"
-- NEVER add closing statements like "pipeline remains healthy and active"
-- NEVER add generic statements about activity levels (e.g., "activity levels remain consistent")
-- NEVER add summary statements about pipeline health or status at the end
-- Return ONLY the 2-3 sentence factual commentary about stale data trends
-- Avoid superlatives and overly positive language
-- Keep total length under 150 words
-- Focus on facts and trends, not cheerleading
-- This is an internal company report to Colibri Digital employees, not to external clients"""
+2. ARR ANALYSIS (if significant change):
+   - If ARR increased >$100k: "Notable this week: Pipeline ARR increased by $[amount], primarily driven by a new $[arr] [Customer] opportunity ([Project]) added by [Seller]."
+   - Use the exact customer, seller, and project details provided
+   - Keep description concise - just customer, amount, and seller name
+
+3. CONTEXT - Pipeline composition:
+   - Mention total open ops
+   - Include WA count if > 0
+   - Include RAPID count if > 0
+
+TONE - RESERVED PROFESSIONAL:
+- Use: "Notable", "Significant progress", "Good improvement", "Marks progress"
+- Avoid: "Excellent!", "Amazing!", "Fantastic!", "Great!", "Outstanding!"
+- Be factual, not promotional
+- State facts, don't cheerlead
+- Professional but not overly enthusiastic
+
+CRITICAL RULES:
+- NEVER use "Hi All" or "Hello team" - start directly with content
+- NEVER use "your pipeline" - say "our pipeline" or "the pipeline"
+- NEVER add closing statements about pipeline health
+- Return ONLY 2-3 sentences of factual commentary
+- Keep under 150 words total
+- Focus on: stale status → ARR changes (if notable) → pipeline composition
+- This is an internal report to Colibri Digital employees"""
 
     try:
         # Initialize Bedrock client with timeout configuration and cost allocation tags

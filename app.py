@@ -170,55 +170,69 @@ def upload_weekly():
             df_stale_reportable = df_stale[~df_stale['Opportunity id'].isin(EXCLUDED_OPS)]
             print(f"[UPLOAD_WEEKLY] Step 3 DONE: Reportable: {len(df_reportable)}, Stale reportable: {len(df_stale_reportable)}")
 
-            # Compare with BASELINE snapshot (ALWAYS the first one, never same-day uploads)
-            print("[UPLOAD_WEEKLY] Step 4: Getting BASELINE snapshot for comparison...")
+            # CRITICAL FIX: Compare with PREVIOUS (LATEST) snapshot, NOT baseline!
+            # This ensures week-over-week comparison instead of always comparing to baseline
+            print("[UPLOAD_WEEKLY] Step 4: Getting PREVIOUS (latest) snapshot for comparison...")
             comparison_data = None
             previous_stats = None
-            baseline_snapshot = db.get_baseline_snapshot()
-            print(f"[UPLOAD_WEEKLY] Baseline snapshot exists: {baseline_snapshot is not None}")
+            previous_snapshot = db.get_last_snapshot()
+            print(f"[UPLOAD_WEEKLY] Previous snapshot exists: {previous_snapshot is not None}")
 
-            if baseline_snapshot:
+            # VERBOSE DEBUG: Show which snapshot we're comparing to
+            if previous_snapshot:
+                log("="*100)
+                log("[UPLOAD_WEEKLY] *** COMPARISON SNAPSHOT DETAILS ***")
+                log(f"[UPLOAD_WEEKLY] Comparing to PREVIOUS snapshot (NOT baseline):")
+                log(f"[UPLOAD_WEEKLY]   - Snapshot ID: {previous_snapshot['snapshot_id']}")
+                log(f"[UPLOAD_WEEKLY]   - File: {previous_snapshot['ace_export_filename']}")
+                log(f"[UPLOAD_WEEKLY]   - Report Week Date: {previous_snapshot.get('report_week_date', 'N/A')}")
+                log(f"[UPLOAD_WEEKLY]   - Snapshot Date: {previous_snapshot['snapshot_date']}")
+                log(f"[UPLOAD_WEEKLY]   - Total Open Ops: {previous_snapshot['total_open_ops']}")
+                log(f"[UPLOAD_WEEKLY]   - Stale Ops: {previous_snapshot['stale_ops_count']}")
+                log("="*100)
+
+            if previous_snapshot:
                 # USE report_week_date if available, otherwise fall back to snapshot_date
-                baseline_week_date_str = baseline_snapshot.get('report_week_date')
-                if baseline_week_date_str:
-                    baseline_date = datetime.strptime(baseline_week_date_str, '%Y-%m-%d').date()
+                previous_week_date_str = previous_snapshot.get('report_week_date')
+                if previous_week_date_str:
+                    previous_date = datetime.strptime(previous_week_date_str, '%Y-%m-%d').date()
                 else:
-                    baseline_date = datetime.fromisoformat(baseline_snapshot['snapshot_date']).date()
+                    previous_date = datetime.fromisoformat(previous_snapshot['snapshot_date']).date()
 
                 # CRITICAL FIX: Use report_week_date from form, NOT datetime.now()!
                 current_week_date = datetime.strptime(report_week_date, '%Y-%m-%d').date()
 
                 log("="*100)
                 log("[UPLOAD_WEEKLY] *** COMPARISON VALIDATION ***")
-                log(f"[UPLOAD_WEEKLY] Baseline report:")
-                log(f"[UPLOAD_WEEKLY]   - Snapshot ID: {baseline_snapshot['snapshot_id']}")
-                log(f"[UPLOAD_WEEKLY]   - File: {baseline_snapshot['ace_export_filename']}")
-                log(f"[UPLOAD_WEEKLY]   - Report Week Date: {baseline_date}")
+                log(f"[UPLOAD_WEEKLY] Previous report:")
+                log(f"[UPLOAD_WEEKLY]   - Snapshot ID: {previous_snapshot['snapshot_id']}")
+                log(f"[UPLOAD_WEEKLY]   - File: {previous_snapshot['ace_export_filename']}")
+                log(f"[UPLOAD_WEEKLY]   - Report Week Date: {previous_date}")
                 log(f"[UPLOAD_WEEKLY] Current report:")
                 log(f"[UPLOAD_WEEKLY]   - File: {filename}")
                 log(f"[UPLOAD_WEEKLY]   - Report Week Date: {current_week_date} (from form)")
-                log(f"[UPLOAD_WEEKLY] Same day? {baseline_date == current_week_date}")
+                log(f"[UPLOAD_WEEKLY] Same day? {previous_date == current_week_date}")
                 log("="*100)
 
-                if baseline_date == current_week_date:
+                if previous_date == current_week_date:
                     log("[UPLOAD_WEEKLY] ⚠️ WARNING: Cannot compare - both reports from same day!")
                     log("[UPLOAD_WEEKLY] Comparison will be SKIPPED to prevent zero-delta bug")
                     comparison_data = None
                     previous_stats = None
                 else:
-                    days_apart = (current_week_date - baseline_date).days
+                    days_apart = (current_week_date - previous_date).days
                     log(f"[UPLOAD_WEEKLY] ✓ Valid comparison: {days_apart} days apart")
-                    log("[UPLOAD_WEEKLY] Step 5: Comparing with BASELINE snapshot...")
-                    comparison_data = db.compare_snapshots(df_all, baseline_snapshot['snapshot_id'])
-                    previous_stats = baseline_snapshot
+                    log("[UPLOAD_WEEKLY] Step 5: Comparing with PREVIOUS snapshot...")
+                    comparison_data = db.compare_snapshots(df_all, previous_snapshot['snapshot_id'])
+                    previous_stats = previous_snapshot
                     log(f"[UPLOAD_WEEKLY] Step 5 DONE: New: {len(comparison_data['new_ops'])}, Closed: {len(comparison_data['closed_ops'])}")
 
             # Calculate consecutive weeks with no stale ops for preview
             print("[UPLOAD_WEEKLY] Step 6: Calculating consecutive weeks...")
             consecutive_weeks = 0
             if len(df_stale_reportable) == 0:
-                if baseline_snapshot and baseline_snapshot.get('consecutive_weeks_no_stale'):
-                    consecutive_weeks = baseline_snapshot['consecutive_weeks_no_stale'] + 1
+                if previous_snapshot and previous_snapshot.get('consecutive_weeks_no_stale'):
+                    consecutive_weeks = previous_snapshot['consecutive_weeks_no_stale'] + 1
                 else:
                     consecutive_weeks = 1
             print(f"[UPLOAD_WEEKLY] Step 6 DONE: Consecutive weeks with no stale: {consecutive_weeks}")
@@ -327,45 +341,58 @@ def preview_email():
         df_stale = get_stale_opportunities(df_open, DAYS_THRESHOLD)
         print(f"[PREVIEW_EMAIL] Step 2 DONE: Found {len(df_stale)} stale ops")
 
-        # Get comparison data from BASELINE snapshot
-        print("[PREVIEW_EMAIL] Step 3: Getting comparison data from BASELINE...")
+        # CRITICAL FIX: Get comparison data from PREVIOUS (latest) snapshot, NOT baseline
+        print("[PREVIEW_EMAIL] Step 3: Getting comparison data from PREVIOUS (latest) snapshot...")
         comparison_data = None
         previous_stats = None
-        baseline_snapshot = db.get_baseline_snapshot()
-        print(f"[PREVIEW_EMAIL] Step 3: Baseline snapshot exists: {baseline_snapshot is not None}")
+        previous_snapshot = db.get_last_snapshot()
+        print(f"[PREVIEW_EMAIL] Step 3: Previous snapshot exists: {previous_snapshot is not None}")
 
-        if baseline_snapshot:
-            print("[PREVIEW_EMAIL] LINE 318: baseline_snapshot EXISTS - entering comparison logic")
-            print(f"[PREVIEW_EMAIL] LINE 318: baseline_snapshot type = {type(baseline_snapshot)}")
-            print(f"[PREVIEW_EMAIL] LINE 318: baseline_snapshot keys = {list(baseline_snapshot.keys()) if isinstance(baseline_snapshot, dict) else 'NOT A DICT'}")
+        # VERBOSE DEBUG: Show which snapshot we're comparing to
+        if previous_snapshot:
+            log("="*100)
+            log("[PREVIEW_EMAIL] *** COMPARISON SNAPSHOT DETAILS ***")
+            log(f"[PREVIEW_EMAIL] Comparing to PREVIOUS snapshot (NOT baseline):")
+            log(f"[PREVIEW_EMAIL]   - Snapshot ID: {previous_snapshot['snapshot_id']}")
+            log(f"[PREVIEW_EMAIL]   - File: {previous_snapshot['ace_export_filename']}")
+            log(f"[PREVIEW_EMAIL]   - Report Week Date: {previous_snapshot.get('report_week_date', 'N/A')}")
+            log(f"[PREVIEW_EMAIL]   - Snapshot Date: {previous_snapshot['snapshot_date']}")
+            log(f"[PREVIEW_EMAIL]   - Total Open Ops: {previous_snapshot['total_open_ops']}")
+            log(f"[PREVIEW_EMAIL]   - Stale Ops: {previous_snapshot['stale_ops_count']}")
+            log("="*100)
+
+        if previous_snapshot:
+            print("[PREVIEW_EMAIL] LINE 318: previous_snapshot EXISTS - entering comparison logic")
+            print(f"[PREVIEW_EMAIL] LINE 318: previous_snapshot type = {type(previous_snapshot)}")
+            print(f"[PREVIEW_EMAIL] LINE 318: previous_snapshot keys = {list(previous_snapshot.keys()) if isinstance(previous_snapshot, dict) else 'NOT A DICT'}")
 
             # CRITICAL FIX: Use report_week_date for comparison, NOT snapshot_date!
             # Same fix we did for upload_weekly
-            print("[PREVIEW_EMAIL] LINE 322: About to get report_week_date from baseline_snapshot")
+            print("[PREVIEW_EMAIL] LINE 322: About to get report_week_date from previous_snapshot")
 
-            # Get baseline report week date
-            print("[PREVIEW_EMAIL] LINE 325: Calling baseline_snapshot.get('report_week_date')")
-            baseline_week_date_str = baseline_snapshot.get('report_week_date')
-            print(f"[PREVIEW_EMAIL] LINE 326: baseline_week_date_str = '{baseline_week_date_str}'")
-            print(f"[PREVIEW_EMAIL] LINE 327: baseline_week_date_str type = {type(baseline_week_date_str)}")
-            print(f"[PREVIEW_EMAIL] LINE 328: baseline_week_date_str is None? {baseline_week_date_str is None}")
-            print(f"[PREVIEW_EMAIL] LINE 329: baseline_week_date_str is empty string? {baseline_week_date_str == ''}")
-            print(f"[PREVIEW_EMAIL] LINE 330: bool(baseline_week_date_str) = {bool(baseline_week_date_str)}")
+            # Get previous report week date
+            print("[PREVIEW_EMAIL] LINE 325: Calling previous_snapshot.get('report_week_date')")
+            previous_week_date_str = previous_snapshot.get('report_week_date')
+            print(f"[PREVIEW_EMAIL] LINE 326: previous_week_date_str = '{previous_week_date_str}'")
+            print(f"[PREVIEW_EMAIL] LINE 327: previous_week_date_str type = {type(previous_week_date_str)}")
+            print(f"[PREVIEW_EMAIL] LINE 328: previous_week_date_str is None? {previous_week_date_str is None}")
+            print(f"[PREVIEW_EMAIL] LINE 329: previous_week_date_str is empty string? {previous_week_date_str == ''}")
+            print(f"[PREVIEW_EMAIL] LINE 330: bool(previous_week_date_str) = {bool(previous_week_date_str)}")
 
-            if baseline_week_date_str:
-                print(f"[PREVIEW_EMAIL] LINE 332: baseline_week_date_str IS TRUTHY - parsing date")
-                print(f"[PREVIEW_EMAIL] LINE 333: Calling datetime.strptime('{baseline_week_date_str}', '%Y-%m-%d')")
-                baseline_date = datetime.strptime(baseline_week_date_str, '%Y-%m-%d').date()
-                print(f"[PREVIEW_EMAIL] LINE 335: baseline_date = {baseline_date}")
-                print(f"[PREVIEW_EMAIL] LINE 336: baseline_date type = {type(baseline_date)}")
+            if previous_week_date_str:
+                print(f"[PREVIEW_EMAIL] LINE 332: previous_week_date_str IS TRUTHY - parsing date")
+                print(f"[PREVIEW_EMAIL] LINE 333: Calling datetime.strptime('{previous_week_date_str}', '%Y-%m-%d')")
+                previous_date = datetime.strptime(previous_week_date_str, '%Y-%m-%d').date()
+                print(f"[PREVIEW_EMAIL] LINE 335: previous_date = {previous_date}")
+                print(f"[PREVIEW_EMAIL] LINE 336: previous_date type = {type(previous_date)}")
             else:
-                print(f"[PREVIEW_EMAIL] LINE 338: baseline_week_date_str IS FALSY - using fallback")
+                print(f"[PREVIEW_EMAIL] LINE 338: previous_week_date_str IS FALSY - using fallback")
                 # Fallback to snapshot_date if report_week_date not available
                 print(f"[PREVIEW_EMAIL] LINE 340: Getting snapshot_date as fallback")
-                snapshot_date_value = baseline_snapshot['snapshot_date']
+                snapshot_date_value = previous_snapshot['snapshot_date']
                 print(f"[PREVIEW_EMAIL] LINE 342: snapshot_date value = '{snapshot_date_value}'")
-                baseline_date = datetime.fromisoformat(snapshot_date_value).date()
-                print(f"[PREVIEW_EMAIL] LINE 344: baseline_date (from snapshot_date) = {baseline_date}")
+                previous_date = datetime.fromisoformat(snapshot_date_value).date()
+                print(f"[PREVIEW_EMAIL] LINE 344: previous_date (from snapshot_date) = {previous_date}")
 
             print("[PREVIEW_EMAIL] LINE 346: Now getting current report week date from session")
             # Get current report week date from session (uploaded file's report_week_date)
@@ -392,27 +419,27 @@ def preview_email():
 
             print("="*100)
             print("[PREVIEW_EMAIL] *** COMPARISON INFO ***")
-            print(f"[PREVIEW_EMAIL] Comparing to BASELINE:")
-            print(f"[PREVIEW_EMAIL]   - File: {baseline_snapshot['ace_export_filename']}")
-            print(f"[PREVIEW_EMAIL]   - Baseline report_week_date: {baseline_week_date_str}")
-            print(f"[PREVIEW_EMAIL]   - Baseline Date: {baseline_date}")
+            print(f"[PREVIEW_EMAIL] Comparing to PREVIOUS:")
+            print(f"[PREVIEW_EMAIL]   - File: {previous_snapshot['ace_export_filename']}")
+            print(f"[PREVIEW_EMAIL]   - Previous report_week_date: {previous_week_date_str}")
+            print(f"[PREVIEW_EMAIL]   - Previous Date: {previous_date}")
             print(f"[PREVIEW_EMAIL] Current report:")
             print(f"[PREVIEW_EMAIL]   - File: {session.get('current_file')}")
             print(f"[PREVIEW_EMAIL]   - Current report_week_date: {current_week_date_str}")
             print(f"[PREVIEW_EMAIL]   - Current Date: {current_date}")
-            print(f"[PREVIEW_EMAIL] ABOUT TO CHECK: baseline_date == current_date")
-            print(f"[PREVIEW_EMAIL] baseline_date value: {baseline_date}")
+            print(f"[PREVIEW_EMAIL] ABOUT TO CHECK: previous_date == current_date")
+            print(f"[PREVIEW_EMAIL] previous_date value: {previous_date}")
             print(f"[PREVIEW_EMAIL] current_date value: {current_date}")
-            print(f"[PREVIEW_EMAIL] baseline_date type: {type(baseline_date)}")
+            print(f"[PREVIEW_EMAIL] previous_date type: {type(previous_date)}")
             print(f"[PREVIEW_EMAIL] current_date type: {type(current_date)}")
-            comparison_result = (baseline_date == current_date)
-            print(f"[PREVIEW_EMAIL] COMPARISON RESULT: baseline_date == current_date = {comparison_result}")
+            comparison_result = (previous_date == current_date)
+            print(f"[PREVIEW_EMAIL] COMPARISON RESULT: previous_date == current_date = {comparison_result}")
             print(f"[PREVIEW_EMAIL] Same day? {comparison_result}")
             print("="*100)
 
-            print(f"[PREVIEW_EMAIL] LINE 391: About to check if baseline_date == current_date")
+            print(f"[PREVIEW_EMAIL] LINE 391: About to check if previous_date == current_date")
             print(f"[PREVIEW_EMAIL] LINE 392: comparison_result = {comparison_result}")
-            if baseline_date == current_date:
+            if previous_date == current_date:
                 print("[PREVIEW_EMAIL] ⚠️ Skipping comparison - same day reports")
                 print(f"[PREVIEW_EMAIL] ❌ Setting comparison_data = None")
                 print(f"[PREVIEW_EMAIL] ❌ Setting previous_stats = None")
@@ -424,9 +451,9 @@ def preview_email():
                 print("[PREVIEW_EMAIL] Step 4: ✅ Different days - comparison WILL run")
                 print("[PREVIEW_EMAIL] Step 4: Calling db.compare_snapshots()...")
                 print(f"[PREVIEW_EMAIL] Step 4: - df_all has {len(df_all)} rows")
-                print(f"[PREVIEW_EMAIL] Step 4: - baseline snapshot ID: {baseline_snapshot['snapshot_id']}")
+                print(f"[PREVIEW_EMAIL] Step 4: - previous snapshot ID: {previous_snapshot['snapshot_id']}")
 
-                comparison_data = db.compare_snapshots(df_all, baseline_snapshot['snapshot_id'])
+                comparison_data = db.compare_snapshots(df_all, previous_snapshot['snapshot_id'])
 
                 print(f"[PREVIEW_EMAIL] Step 4: db.compare_snapshots() RETURNED")
                 print(f"[PREVIEW_EMAIL] Step 4: comparison_data TYPE: {type(comparison_data)}")
@@ -437,7 +464,7 @@ def preview_email():
                     print(f"[PREVIEW_EMAIL] Step 4: - closed_ops: {len(comparison_data.get('closed_ops', []))} items")
                     print(f"[PREVIEW_EMAIL] Step 4: - status_changes: {len(comparison_data.get('status_changes', []))} items")
 
-                previous_stats = baseline_snapshot
+                previous_stats = previous_snapshot
                 print(f"[PREVIEW_EMAIL] Step 4: previous_stats TYPE: {type(previous_stats)}")
                 print(f"[PREVIEW_EMAIL] Step 4: previous_stats IS NONE: {previous_stats is None}")
                 if previous_stats:
@@ -687,6 +714,28 @@ def send_email_route():
 
     print(f"[SEND EMAIL] ✓ Session valid")
 
+    # CRITICAL SAFETY CHECK: Prevent duplicate emails from being sent
+    print("[SEND EMAIL] Checking for duplicate report...")
+    report_week_date = session.get('report_week_date')
+    print(f"[SEND EMAIL] Report week date: {report_week_date}")
+
+    existing_snapshot = db.find_snapshot_by_week(report_week_date)
+    print(f"[SEND EMAIL] Existing snapshot: {existing_snapshot}")
+
+    if existing_snapshot:
+        print(f"[SEND EMAIL] ⚠️ DUPLICATE DETECTED! Snapshot ID {existing_snapshot['snapshot_id']} already exists for week {report_week_date}")
+        print("[SEND EMAIL] BLOCKING email send to prevent duplicate")
+        return jsonify({
+            'success': False,
+            'duplicate': True,
+            'existing_snapshot_id': existing_snapshot['snapshot_id'],
+            'error': f"🚫 A report for week {report_week_date} was already sent on {existing_snapshot['snapshot_date']}. "
+                     f"Snapshot ID: #{existing_snapshot['snapshot_id']}. "
+                     f"Cannot send duplicate email. Please check the History page."
+        }), 409  # 409 Conflict status code
+
+    print("[SEND EMAIL] ✓ No duplicate found - safe to send email")
+
     try:
         # Read the ALREADY GENERATED HTML from file
         html_filename = session['email_html_file']
@@ -763,6 +812,52 @@ def history():
     """View historical snapshots."""
     snapshots = db.get_all_snapshots()
     return render_template('history.html', snapshots=snapshots)
+
+
+@app.route('/delete_snapshot/<int:snapshot_id>', methods=['POST'])
+def delete_snapshot_route(snapshot_id):
+    """
+    Delete a snapshot with automatic backup and safety checks.
+
+    Safety features:
+    - Snapshot #1 (baseline) cannot be deleted
+    - Automatic backup created before deletion
+    - Extra confirmation for important snapshots
+    """
+    print("\n" + "="*80)
+    print(f"[DELETE SNAPSHOT] Request to delete snapshot #{snapshot_id}")
+    print("="*80)
+
+    try:
+        # Call the database delete function (which has all safety features)
+        result = db.delete_snapshot(snapshot_id)
+
+        if result['success']:
+            print(f"[DELETE SNAPSHOT] ✅ Success: {result['message']}")
+            print(f"[DELETE SNAPSHOT] Backup file: {result.get('backup_file', 'N/A')}")
+            print("="*80 + "\n")
+            return jsonify(result), 200
+        else:
+            # Handle failure (e.g., trying to delete baseline)
+            print(f"[DELETE SNAPSHOT] ❌ Failed: {result['message']}")
+            print("="*80 + "\n")
+
+            # If it's the baseline, return 403 Forbidden
+            if result.get('is_baseline'):
+                return jsonify(result), 403
+            else:
+                return jsonify(result), 400
+
+    except Exception as e:
+        error_msg = f"Server error: {str(e)}"
+        print(f"[DELETE SNAPSHOT] ❌ Exception: {error_msg}")
+        import traceback
+        print(traceback.format_exc())
+        print("="*80 + "\n")
+        return jsonify({
+            'success': False,
+            'message': error_msg
+        }), 500
 
 
 @app.route('/validation_errors')

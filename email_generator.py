@@ -757,8 +757,7 @@ def generate_email_html(df_stale, df_open, current_stats, previous_stats=None, c
     html += '<h2>⚠️ Stale Opportunities (30+ Days Since Last Update)</h2>\n'
     if len(df_stale_reportable) > 0:
         html += f'<p>The following <strong>{len(df_stale_reportable)} opportunities</strong> need to be updated to maintain our Partner Central score:</p>\n'
-    else:
-        html += '<p>Great news! No opportunities have been stale for more than 30 days.</p>\n'
+    # REMOVED duplicate "Great news!" message - already handled by generate_stale_ops_table() function
     html += generate_stale_ops_table(df_stale)
     html += '</div>\n'
 
@@ -770,7 +769,6 @@ def generate_email_html(df_stale, df_open, current_stats, previous_stats=None, c
     df_open_reportable = df_open[~df_open['Opportunity id'].isin(EXCLUDED_OPS)]
     html += '<div class="all-ops-section">\n'
     html += '<h2>📋 All Open Opportunities in ACE</h2>\n'
-    html += '<p>Please update these opportunities in Partner Central or let me know if they should be closed.</p>\n'
     html += f'<p>Complete list of all <strong>{len(df_open_reportable)} current open opportunities</strong> in Partner Central ACE:</p>\n'
     html += generate_all_open_ops_table(df_open)
     html += '</div>\n'
